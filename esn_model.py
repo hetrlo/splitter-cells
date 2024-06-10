@@ -77,7 +77,7 @@ class Model:
         - bot_position: current position of the bot
         - reservoir: reservoir model
         if self.where == None: record the reservoir state everywhere in the maze
-        else: record the reservoir state only in the last corridor juste before the decision point.
+        else: record the reservoir state only in the last corridor just before the decision point.
         """
         s = []
         for val in np.array(self.reservoir.state()[0]):

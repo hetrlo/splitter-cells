@@ -84,7 +84,7 @@ class Maze:
         Render the maze
         """
 
-        # Buidling a filled patch from walls
+        # Building a filled patch from walls
         V, C, S = [], [], self.walls
         V.extend(S[0 + i, 0] for i in [0, 1, 2, 3, 0])
         V.extend(S[4 + i, 0] for i in [0, 1, 2, 3, 0])

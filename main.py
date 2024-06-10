@@ -27,11 +27,11 @@ import numpy as np
 
 
 task = 'RR-LL' #'RR-LL', 'R-L'
-simulation_mode = "data"  # data, walls, esn
+simulation_mode = "walls"  # 'data', 'walls', 'esn'
 cues = False
 save_reservoir_states = False
 save_bot_states = False
-path_to_save = '/Users/nchaix/Documents/PhD/code/splitter_cells/data/R-L_60/cues/reservoir_states'
+path_to_save = './trials'
 
 
 if __name__ == '__main__':

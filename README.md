@@ -9,6 +9,9 @@ This repository provides the source code to simulate a bot executing an 8-Maze n
 -  *numpy*, *scipy*, *sklearn*, *matplotlib*
 - *umap*
 - *optuna* 
+- *torch*
+- *os*
+- *mlflow*
 - [reservoirpy](https://reservoirpy.readthedocs.io/en/latest/index.html)
 
 

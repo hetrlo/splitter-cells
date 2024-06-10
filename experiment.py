@@ -18,7 +18,7 @@ from esn_model import Model
 
 class Experiment:
     """
-    This class run the experiment.
+    This class runs the experiment.
     """
     def __init__(self, model_file, data_folder, simulation_mode, task, cues, save_reservoir_states, save_bot_states):
 
