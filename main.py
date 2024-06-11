@@ -25,8 +25,8 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-task = 'RR-LL' #'RR-LL', 'R-L'
+maze = 'maze'
+task = 'R-L' #'RR-LL', 'R-L'
 simulation_mode = "walls"  # 'data', 'walls', 'esn'
 cues = False
 save_reservoir_states = False
@@ -56,7 +56,7 @@ if __name__ == '__main__':
         raise Exception("Task name {}".format(task) + " is not recognized.")
 
     # Set up the experiment
-    exp = Experiment(model_file, data_folder, simulation_mode, task, cues,
+    exp = Experiment(model_file, data_folder, simulation_mode, maze, task, cues,
                      save_reservoir_states=save_reservoir_states,
                      save_bot_states=save_bot_states)
 

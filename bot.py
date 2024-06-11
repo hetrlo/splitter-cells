@@ -64,7 +64,7 @@ class Bot:
         ax.add_artist(body)
         ax.add_artist(head)
 
-    def set_wall_constraints(self):
+    def set_wall_constraints(self, maze):
         """Imposes restrictions to confine the bot within the walls."""
         x, y = self.position
         size = self.size
@@ -86,13 +86,22 @@ class Bot:
             y = min_y + size
 
         # Constrain movement around specific walls
-        if 100 - size < x < 200 + size:
-            if 100 - size < y < 200 + size:  # Bottom walls
-                y = max(100 + size, min(y, 200 - size))
-                x = max(100 + size, min(x, 200 - size))
-            elif 300 - size < y < 400 + size:  # Top walls
-                y = max(300 + size, min(y, 400 - size))
-                x = max(100 + size, min(x, 200 - size))
+        if maze.name == 'maze':
+            if 100 - size < x < 200 + size:
+                if 100 - size < y < 200 + size:  # Bottom walls
+                    y = max(100 + size, min(y, 200 - size))
+                    x = max(100 + size, min(x, 200 - size))
+                elif 300 - size < y < 400 + size:  # Top walls
+                    y = max(300 + size, min(y, 400 - size))
+                    x = max(100 + size, min(x, 200 - size))
+        elif maze.name == 'maze_four':
+            if 100 - size < x < 200 + size:
+                for k in range(4):
+                    low_bound = 100 + k*100
+                    up_bound = 150 + k*100
+                    if low_bound - size < y < up_bound + size:
+                        y = max(low_bound + size, min(y, up_bound - size))
+                        x = max(low_bound + size, min(x, up_bound - size))
 
         self.position = (x, y)
 
@@ -102,11 +111,11 @@ class Bot:
         if abs(dv) > 0.01:  # if 75 sensor size
             self.orientation += 0.015 * dv
 
-    def update_position(self):
+    def update_position(self, maze):
         """Updates the position of the bot according to the calculated orientation."""
         self.position += 2 * np.array([np.cos(self.orientation), np.sin(self.orientation)])
         #self.position += np.random.normal(0, 1) * 0.7
-        self.set_wall_constraints()
+        self.set_wall_constraints(maze)
 
     def update(self, maze, cues):
         """ Update the bot's position and orientation in the maze """

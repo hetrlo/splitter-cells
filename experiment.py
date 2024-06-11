@@ -1,4 +1,4 @@
-from maze import Maze
+from maze import Maze, MazeFour
 from bot import Bot
 from simulation_visualizer import SimulationVisualizer
 import numpy as np
@@ -20,7 +20,7 @@ class Experiment:
     """
     This class runs the experiment.
     """
-    def __init__(self, model_file, data_folder, simulation_mode, task, cues, save_reservoir_states, save_bot_states):
+    def __init__(self, model_file, data_folder, simulation_mode, maze, task, cues, save_reservoir_states, save_bot_states):
 
         self.task = task
         self.simulation_mode = simulation_mode
@@ -33,7 +33,11 @@ class Experiment:
             sensor_size = 80
 
         self.bot = Bot(save_bot_states, sensor_size=sensor_size)
-        self.maze = Maze(simulation_mode=simulation_mode)
+        # Init of the maze
+        if maze == 'maze':
+            self.maze = Maze(simulation_mode=simulation_mode)
+        elif maze == 'maze_four':       
+            self.maze = MazeFour(simulation_mode=simulation_mode)
         self.simulation_visualizer = SimulationVisualizer(self.bot.n_sensors)
         self.model_file = model_file
         self.data_folder = data_folder
@@ -66,14 +70,14 @@ class Experiment:
                 cues = None
 
             if self.simulation_mode == 'walls':
-                self.bot.update_position()
+                self.bot.update_position(self.maze)
                 self.bot.compute_orientation()
                 if self.task == 'R-L':
                     self.maze.update_walls(self.bot.position)
                 elif self.task == 'RR-LL':
                     self.maze.update_walls_RR_LL(self.bot.position)
             elif self.simulation_mode == 'esn':
-                self.bot.update_position()
+                self.bot.update_position(self.maze)
                 self.bot.orientation = self.model.process(self.bot.sensors, cues)
 
             self.bot.update(self.maze, cues=self.cues)
