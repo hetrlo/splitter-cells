@@ -25,8 +25,8 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'random_walls' # 'maze', 'maze_four', 'random_walls'
-task = 'wander' #'RR-LL', 'R-L', 'wander'
+maze = 'maze' # 'maze', 'maze_four', 'random_walls'
+task = 'RR-LL' #'RR-LL', 'R-L', 'wander'
 simulation_mode = "esn"  # 'data', 'walls', 'esn'
 cues = False
 save_reservoir_states = False

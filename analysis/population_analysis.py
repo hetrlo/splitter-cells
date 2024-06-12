@@ -84,9 +84,9 @@ def plot_PCA_3D(cues=False):
     None
     """
     if cues:
-        path = "../data/R-L_60/cues/reservoir_states/"
+        path = "/home/heloise/Mnémosyne/splitter-cells/data/R-L_60/cues/reservoir_states/"
     else:
-        path = "../data/R-L_60/no_cues/reservoir_states/"
+        path = "/home/heloise/Mnémosyne/splitter-cells/data/R-L_60/no_cues/reservoir_states/"
 
     # Load reservoir states and positions
     res_activity = np.load(path + 'reservoir_states.npy')
@@ -137,9 +137,9 @@ def plot_PCA_3D_with_distance(cues=False):
     """
     # Define data path based on cues parameter
     if cues:
-        path = "../data/R-L_60/cues/reservoir_states/"
+        path = "/home/heloise/Mnémosyne/splitter-cells/data/R-L_60/cues/reservoir_states/"
     else:
-        path = "../data/R-L_60/no_cues/reservoir_states/"
+        path = "/home/heloise/Mnémosyne/splitter-cells/data/R-L_60/no_cues/reservoir_states/"
 
     # Load reservoir states and positions
     res_activity = np.load(path + 'reservoir_states.npy')
@@ -238,7 +238,7 @@ def SVM_classifier():
     """
     Build and train SVM classifier.
     """
-    path = "/Users/nchaix/Documents/PhD/code/splitter_cells/data/SVM_data/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/data/SVM_data/"
     input = np.load(path + 'input.npy')
     output = np.load(path + 'output.npy')
 
@@ -265,7 +265,7 @@ def plot_SVM_predictions():
     """
 
     # Define the path to the SVM data directory
-    path = "/Users/nchaix/Documents/PhD/code/splitter_cells/data/SVM_data/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/data/SVM_data/"
 
     # Load SVM predictions and positions
     SVM_pred = np.squeeze(np.load(path + 'SVM_predictions.npy')) # 0: going right, 1: going left
@@ -309,9 +309,9 @@ def gather_reservoir_states_central_corridor(cues=False):
                                  of corresponding reservoir states.
         """
     if cues:
-        path = "../data/RR-LL/cues/reservoir_states/"
+        path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/cues/reservoir_states/"
     else:
-        path = "../data/RR-LL/no_cues/reservoir_states/"
+        path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
 
     reservoir_states = np.load(path + 'reservoir_states.npy')
     positions = np.load(path + 'positions.npy')
@@ -393,9 +393,9 @@ def plot_UMAP(cues=False, n_neighbors=5):
         None
         """
     if cues:
-        path = "../data/RR-LL/cues/reservoir_states/"
+        path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/cues/reservoir_states/"
     else:
-        path = "../data/RR-LL/no_cues/reservoir_states/"
+        path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
 
     # Load reservoir states
     reservoir_states = np.load(path + 'reservoir_states_corridor.npy', allow_pickle=True).item()
@@ -442,7 +442,7 @@ def plot_UMAP_error_case():
     """
 
     # Define the path to the error case data directory
-    path = '/Users/nchaix/Documents/PhD/code/splitter_cells/data/RR-LL/no_cues/error_case/'
+    path = '/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/error_case/'
 
     # Load reservoir states data
     reservoir_states = np.load(path + 'reservoir_states.npy')
@@ -497,8 +497,8 @@ if __name__ == '__main__':
     #plot_PCA_3D()
     #plot_PCA_3D_with_distance()
     #plot_SVM_predictions()
-    plot_UMAP(cues=False, n_neighbors=5)
-    #plot_UMAP_error_case()
+    #plot_UMAP(cues=False, n_neighbors=5)
+    plot_UMAP_error_case()
 
 
 

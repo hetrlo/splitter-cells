@@ -284,8 +284,8 @@ def plot_splitter_cells_count():
                                    for the model with cues.
     """
 
-    path_nc = "../data/RR-LL/no_cues/reservoir_states/"
-    path_c = "../data/RR-LL/cues/reservoir_states/"
+    path_nc = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+    path_c = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/cues/reservoir_states/"
 
     res_activity_nc, res_activity_c = load_reservoir_states(path_nc), load_reservoir_states(path_c)
     activity_ranges_nc, activity_ranges_c = get_activity_ranges(path_nc), get_activity_ranges(path_c)
@@ -330,7 +330,7 @@ def plot_splitter_cells_activity():
         Returns:
         None
         """
-    path = "../data/RR-LL/no_cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
     res_activity = load_reservoir_states(path)
     activity_ranges = get_activity_ranges(path)
     index_range = 2
@@ -391,7 +391,7 @@ def splitter_cells_activity_compare_level_of_training():
         Returns:
         None
         """
-    path = "../data/R-L_60/cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/data/R-L_60/cues/reservoir_states/"
     res_activity = load_reservoir_states(path)
     activity_ranges = get_activity_ranges(path)
     index_range = 0
@@ -408,7 +408,7 @@ def splitter_cells_activity_compare_level_of_training():
     splitter_1 = find_splitter_cells(mean_activities_1['RL'], mean_activities_1['LR'], 0.1)
     print(len(splitter_1))
 
-    path = "../data/R-L_60/cues/reservoir_states_under_trained/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/data/R-L_60/cues/reservoir_states_under_trained/"
     res_activity = load_reservoir_states(path)
     activity_ranges = get_activity_ranges(path)
     mean_activities_2 = {}
@@ -512,7 +512,7 @@ def plot_hippocampal_cells_9():
     fig = plt.figure(layout='constrained', figsize=(9,9))
     grid = fig.add_gridspec(3, 3, wspace=0, hspace=0)
 
-    path = "../data/RR-LL/no_cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
     positions = load_positions(path)
     res_activity = load_reservoir_states(path)
 
@@ -579,7 +579,7 @@ def plot_hippocampal_cells_3():
 
         return scat
     fig, axes = plt.subplots(1, 3, figsize=(12, 4))  # Increased figure width
-    path = "../data/RR-LL/no_cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
     positions = load_positions(path)
     res_activity = load_reservoir_states(path)
 
@@ -624,7 +624,7 @@ def plot_head_direction_cells():
         Returns:
         None
         """
-    path = "../data/RR-LL/no_cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
     res_activity = load_reservoir_states(path)
     orientations = load_orientations(path)
 
@@ -668,7 +668,7 @@ def raster_plot():
 
     Returns:
     None"""
-    path = "../data/RR-LL/no_cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
     res_activity = load_reservoir_states(path)
     activity_ranges = get_activity_ranges(path)
     max_firing_rate = 200 / 1000  # Frequency
@@ -760,7 +760,7 @@ def plot_splitter_cells_during_error_trial():
         None
         """
     # Define the path to the error case data directory
-    path = '/Users/nchaix/Documents/PhD/code/splitter_cells/data/RR-LL/no_cues/error_case/'
+    path = '/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/error_case/'
 
     # Load reservoir states data
     reservoir_states = np.load(path + 'reservoir_states.npy')
@@ -808,9 +808,9 @@ def plot_RSA_matrix(cues=False):
     """
 
     if cues:
-        path = "../data/RR-LL/cues/reservoir_states/"
+        path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/cues/reservoir_states/"
     else:
-        path = "../data/RR-LL/no_cues/reservoir_states/"
+        path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
 
     # Load reservoir states
     reservoir_states = np.load(path + 'reservoir_states_corridor.npy', allow_pickle=True).item()

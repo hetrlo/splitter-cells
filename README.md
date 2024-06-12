@@ -12,6 +12,8 @@ This repository provides the source code to simulate a bot executing an 8-Maze n
 - *torch*
 - *os*
 - *mlflow*
+- *seaborn*
+- *umap*, *umap-learn*
 - [reservoirpy](https://reservoirpy.readthedocs.io/en/latest/index.html)
 
 
