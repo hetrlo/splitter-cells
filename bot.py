@@ -85,48 +85,42 @@ class Bot:
         elif y - size < min_y:
             y = min_y + size
 
+        # Computes the position to avoid a wall
+        def avoid_wall_coordinates(x, y, walls):
+            minwall = np.argmin(np.abs([walls[0]-x,walls[1]-x,walls[2]-y,walls[3]-y]))
+            if minwall <=1:
+                x = walls[minwall]
+            else:
+                y = walls[minwall]
+            return [x,y]
+
         # Constrain movement around specific walls
         if maze.name == 'maze':
-            if 100 - size < x < 200 + size:
+            '''if 100 - size < x < 200 + size:
                 if 100 - size < y < 200 + size:  # Bottom walls
                     y = max(100 + size, min(y, 200 - size))
                     x = max(100 + size, min(x, 200 - size))
                 elif 300 - size < y < 400 + size:  # Top walls
                     y = max(300 + size, min(y, 400 - size))
-                    x = max(100 + size, min(x, 200 - size))
-            '''if 100 - size < x < 150:
-                # Bottom wall, left border
-                if 100 - size < y < 150:
-                    x, y = 100 - size, 100 - size
-                elif 150 < y < 200 + size:
-                    x, y = 100 - size, 200 + size
-                # Top wall, left border
-                elif 300 - size < y < 350:
-                    x, y = 100 - size, 200 - size
-                elif 350 < y < 400 + size:
-                    x, y = 100 - size, 400 + size
-
-            elif 150 <= x < 200 + size:
-                # Bottom wall, right border
-                if 100 - size < y < 150:
-                    x, y = 200 + size, 100 - size
-                elif 150 < y < 200 + size:
-                    x, y = 200 + size, 200 + size
-                # Top wall, right border
-                elif 300 - size < y < 350:
-                    x, y = 200 + size, 300 - size
-                elif 350 < y < 400 + size:
-                    x, y = 200 + size, 400 + size'''
+                    x = max(100 + size, min(x, 200 - size))'''
+            if 100 - size < x < 200 + size:
+                if 100 - size < y < 200 + size:  # Bottom walls
+                    walls = [100-size, 200+size, 100-size, 200+size] # xleft, xright, yleft, yright
+                    [x,y] = avoid_wall_coordinates(x, y, walls)
+                elif 300 - size < y < 400 + size:  # Top walls
+                    walls = [100-size, 200+size, 300-size, 400+size]
+                    [x,y] = avoid_wall_coordinates(x, y, walls)
                 
 
         elif maze.name == 'maze_four':
             if 100 - size < x < 200 + size:
                 for k in range(4):
-                    low_bound = 100 + k*100
-                    up_bound = 150 + k*100
-                    if low_bound - size < y < up_bound + size:
-                        y = max(low_bound + size, min(y, up_bound - size))
-                        x = max(low_bound + size, min(x, up_bound - size))
+                    y_low_bound = 100 + k*100
+                    y_up_bound = 150 + k*100
+                    if y_low_bound - size < y < y_up_bound + size:
+                        walls = [100-size, 200+size, y_low_bound-size, y_up_bound+size]
+                        [x,y] = avoid_wall_coordinates(x, y, walls)
+                        
 
         self.position = (x, y)
 

@@ -25,7 +25,7 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'maze' # 'maze', 'maze_four'
+maze = 'maze_four' # 'maze', 'maze_four'
 task = 'R-L' #'RR-LL', 'R-L'
 simulation_mode = "esn"  # 'data', 'walls', 'esn'
 cues = False
