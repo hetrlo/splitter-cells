@@ -1,4 +1,4 @@
-from maze import Maze, MazeFour
+from maze import Maze, MazeFour, RandomWalls
 from bot import Bot
 from simulation_visualizer import SimulationVisualizer
 import numpy as np
@@ -27,10 +27,12 @@ class Experiment:
         self.cues = cues
 
         if task == "R-L":
-            sensor_size = 20
+            sensor_size = 60
         # Bigger sensor because the task is more challenging
         elif task == "RR-LL":
             sensor_size = 80
+        elif task == "wander":
+            sensor_size = 60
 
         self.bot = Bot(save_bot_states, sensor_size=sensor_size)
         # Init of the maze
@@ -38,6 +40,8 @@ class Experiment:
             self.maze = Maze(simulation_mode=simulation_mode)
         elif maze == 'maze_four':       
             self.maze = MazeFour(simulation_mode=simulation_mode)
+        elif maze == 'random_walls':
+            self.maze = RandomWalls(simulation_mode=simulation_mode)
         self.simulation_visualizer = SimulationVisualizer(self.bot.n_sensors)
         self.model_file = model_file
         self.data_folder = data_folder
@@ -76,6 +80,8 @@ class Experiment:
                     self.maze.update_walls(self.bot.position)
                 elif self.task == 'RR-LL':
                     self.maze.update_walls_RR_LL(self.bot.position)
+                elif self.task == 'wander':
+                    pass
             elif self.simulation_mode == 'esn':
                 self.bot.update_position(self.maze)
                 self.bot.orientation = self.model.process(self.bot.sensors, cues)

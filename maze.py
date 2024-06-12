@@ -247,11 +247,15 @@ class MazeFour:
         else:
             pass
 
-    def update_walls_4_loop(self, bot_position):# TODO: finish this function
+    def update_walls_4_loop(self, bot_position):# TODO: finish this function (ou pas, peut être peu)
         """ Add the invisible walls to alternate right and left between the four holes."""
-        if bot_position[1] < 100:
-            self.walls[20:] = [[(0, 175), (100, 225)],
-                               [(200, 125), (300, 175)]]
+        if 250 < bot_position[1] < 300: # Center corridor
+            if bot_position[0] > 150: # Right side
+                self.walls[20:] = [[(300, 275), (200, 325)],
+                               [(300, 175), (200, 125)]]
+            
+                
+
         elif bot_position[1] > 450:
             self.walls[20:] = [[(0, 275), (100, 225)],
                                [(200, 325), (300, 275)]]
@@ -285,3 +289,79 @@ class MazeFour:
                                [(200, 300), (300, 250)]]
         else:
             pass
+
+class RandomWalls:
+    """ A maze with random objects
+    """
+
+    def __init__(self, simulation_mode = "esn"):
+        self.name = 'random_walls'
+
+        def create_wall(bl, br, tr, tl): # bottom-left, bottom-right...
+            return [
+                [bl,br],
+                [br,tr],
+                [tr,tl],
+                [tl,bl]
+            ]
+
+        # Surrounding walls
+        self.walls = create_wall((0,0), (300,0), (300,500), (0,500))
+        # 1st hole
+        self.walls += create_wall((50,100), (100,100), (100,200), (50,200))
+        # 2nd hole
+        self.walls += create_wall((200,300), (250,300), (250,350), (200,350))
+        # 3rd hole
+        self.walls += create_wall((50, 275), (100, 275), (100, 325), (50, 325))
+        # 4th hole
+        self.walls += create_wall((200, 450), (300, 450), (300, 500), (200, 500))
+        # Corner 1st piece
+        self.walls += create_wall((150, 50), (250, 50), (250, 100), (150, 100))
+        # Corner 2nd piece
+        self.walls += create_wall((200, 100), (250, 100), (250, 150), (200, 150))
+        self.walls = np.array(self.walls)
+        
+        if simulation_mode == "walls":
+            self.invisible_walls = True
+        else:
+            self.invisible_walls = False
+            #for k in range(28, len(self.walls)):
+            #    self.walls[k] = [(0, 0), (0, 0)]
+
+        self.alternate = None
+        self.iter = 0 # Sert pour le RR-LL
+        self.in_corridor = False
+
+    def draw(self, ax, grid=True, margin=5):
+        """
+        Render the maze
+        """
+
+        # Building a filled patch from walls
+        V, C, S = [], [], self.walls # Visible walls
+        n_walls = len(S)//4 # For now is ok, but careful
+        for k in range(n_walls):
+            V.extend(S[4*k + i, 0] for i in [0, 1, 2, 3, 0])
+
+        C = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO, Path.CLOSEPOLY] * n_walls
+        path = Path(V, C)
+        patch = PathPatch(path, clip_on=False, linewidth=1.5,
+                          edgecolor="black", facecolor="white")
+        
+
+        # Set figure limits, grid and ticks
+        ax.set_axisbelow(True)
+        ax.add_artist(patch)
+        ax.set_xlim(0 - margin, 300 + margin)
+        ax.set_ylim(0 - margin, 500 + margin)
+        if grid:
+            ax.xaxis.set_major_locator(MultipleLocator(100))
+            ax.xaxis.set_minor_locator(MultipleLocator(10))
+            ax.yaxis.set_major_locator(MultipleLocator(100))
+            ax.yaxis.set_minor_locator(MultipleLocator(10))
+            ax.grid(True, "major", color="0.75", linewidth=1.00, clip_on=False)
+            ax.grid(True, "minor", color="0.75", linewidth=0.50, clip_on=False)
+        ax.set_xticklabels([])
+        ax.set_yticklabels([])
+        ax.tick_params(axis='both', which='major', size=0)
+        ax.tick_params(axis='both', which='minor', size=0)

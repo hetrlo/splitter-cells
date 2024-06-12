@@ -25,9 +25,9 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'maze_four' # 'maze', 'maze_four'
-task = 'R-L' #'RR-LL', 'R-L'
-simulation_mode = "esn"  # 'data', 'walls', 'esn'
+maze = 'random_walls' # 'maze', 'maze_four', 'random_walls'
+task = 'wander' #'RR-LL', 'R-L'
+simulation_mode = "walls"  # 'data', 'walls', 'esn'
 cues = False
 save_reservoir_states = False
 save_bot_states = False
@@ -43,7 +43,7 @@ if __name__ == '__main__':
         else:
             model_file = "model_settings/model_RL_no_cues_.json"
             data_folder = "data/R-L_60/no_cues/"
-    elif task == 'RR-LL':
+    elif task == 'RR-LL' or task == 'wander': # TODO : virer ce truc affreux, c'est super faux
         print('Run the half-alternation task (RR-LL) ...')
         if cues:
             model_file = "model_settings/model_RR-LL_cues.json"

@@ -3,14 +3,12 @@ from matplotlib.collections import LineCollection
 from matplotlib.patches import Circle
 from maze import line_intersect
 
-
-
 class Bot:
 
     def __init__(self, save_bot_sates, sensor_size):
         self.size = 10
         self.position = 150, 250
-        self.orientation = 0
+        self.orientation = -0.015
         self.n_sensors = 8
 
         # Direction flag
@@ -68,6 +66,8 @@ class Bot:
         """Imposes restrictions to confine the bot within the walls."""
         x, y = self.position
         size = self.size
+        margin = 5
+
         max_x = 300
         min_x = 0
         max_y = 500
@@ -86,12 +86,28 @@ class Bot:
             y = min_y + size
 
         # Computes the position to avoid a wall
-        def avoid_wall_coordinates(x, y, walls):
-            minwall = np.argmin(np.abs([walls[0]-x,walls[1]-x,walls[2]-y,walls[3]-y]))
-            if minwall <=1:
-                x = walls[minwall]
-            else:
-                y = walls[minwall]
+        def avoid_wall_coordinates(x, y, border):
+            # Determins the closest wall to position (x,y)
+            arg_min_wall = np.argmin(np.abs([border[0]-x,border[1]-x,border[2]-y,border[3]-y]))
+            if arg_min_wall <=1: # The closest wall is vertical
+                x = border[arg_min_wall]
+            else: # The closest wall is horizontal
+                y = border[arg_min_wall]
+            return [x,y]
+        
+        # Constraints for maze-specific walls
+        def set_constraints(x, y, walls):
+            for k in range(len(walls)//4):
+                hole = [walls[4*k+i] for i in range(4)]
+                # Setting the borders along x and y axis
+                x_low_bound = hole[0][0][0] - margin
+                x_up_bound = hole[1][0][0] + margin
+                y_low_bound = hole[1][0][1] - margin
+                y_up_bound = hole[1][1][1] + margin
+                if x_low_bound - size <= x <= x_up_bound:
+                    if y_low_bound - size <= y <= y_up_bound:
+                        border = [x_low_bound-size, x_up_bound+size, y_low_bound-size, y_up_bound+size]
+                        [x,y] = avoid_wall_coordinates(x, y, border)
             return [x,y]
 
         # Constrain movement around specific walls
@@ -103,23 +119,56 @@ class Bot:
                 elif 300 - size < y < 400 + size:  # Top walls
                     y = max(300 + size, min(y, 400 - size))
                     x = max(100 + size, min(x, 200 - size))'''
-            if 100 - size < x < 200 + size:
+            [x,y] = set_constraints(x, y, maze.walls[4:12])        
+            '''if 100 - size < x < 200 + size:
                 if 100 - size < y < 200 + size:  # Bottom walls
                     walls = [100-size, 200+size, 100-size, 200+size] # xleft, xright, yleft, yright
                     [x,y] = avoid_wall_coordinates(x, y, walls)
                 elif 300 - size < y < 400 + size:  # Top walls
                     walls = [100-size, 200+size, 300-size, 400+size]
-                    [x,y] = avoid_wall_coordinates(x, y, walls)
+                    [x,y] = avoid_wall_coordinates(x, y, walls)'''
                 
 
         elif maze.name == 'maze_four':
-            if 100 - size < x < 200 + size:
+            [x,y] = set_constraints(x, y, maze.walls[4:20])
+            '''if 100 - size < x < 200 + size:
                 for k in range(4):
                     y_low_bound = 100 + k*100
                     y_up_bound = 150 + k*100
                     if y_low_bound - size < y < y_up_bound + size:
                         walls = [100-size, 200+size, y_low_bound-size, y_up_bound+size]
-                        [x,y] = avoid_wall_coordinates(x, y, walls)
+                        [x,y] = avoid_wall_coordinates(x, y, walls)'''
+
+        elif maze.name == 'random_walls':
+            [x,y] = set_constraints(x, y, maze.walls[4:])
+            '''if 50 - size < x < 100 + size:
+                # First hole
+                if 100 - size < y < 200 + size:
+                    walls = [50-size, 100+size, 100-size, 200+size]
+                    [x,y] = avoid_wall_coordinates(x, y, walls)
+                # Third hole
+                elif 300 - size < y < 350 + size:
+                    walls = [50-size, 100+size, 300-size, 350+size]
+                    [x,y] = avoid_wall_coordinates(x, y, walls)
+            if 200 - size < x < 250 + size:
+                # Second hole
+                if 200 - size < y < 300 + size:
+                    walls = [200-size, 250+size, 200-size, 300+size]
+                    [x,y] = avoid_wall_coordinates(x, y, walls)
+                # Corner 2nd piece
+                if 100 - size < y < 150 + size:
+                    walls = [200-size, 250 + size, 100-size, 150+size]
+                    [x,y] = avoid_wall_coordinates(x, y, walls)
+            # Fourth wall
+            if 150 - size < x < 200 + size:
+                if 400 - size < y < 450 + size:
+                    walls = [150 - size, 200 + size, 400 - size, 450 + size]
+                    [x,y] = avoid_wall_coordinates(x, y, walls)
+            # Corner 1st piece
+            if 150 - size < x < 250 + size:
+                if 50 - size < y < 100 + size:
+                    walls = [150-size, 250+size, 50-size, 100+size]
+                    [x,y] = avoid_wall_coordinates(x, y, walls)'''
                         
 
         self.position = (x, y)
