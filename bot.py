@@ -94,6 +94,31 @@ class Bot:
                 elif 300 - size < y < 400 + size:  # Top walls
                     y = max(300 + size, min(y, 400 - size))
                     x = max(100 + size, min(x, 200 - size))
+            '''if 100 - size < x < 150:
+                # Bottom wall, left border
+                if 100 - size < y < 150:
+                    x, y = 100 - size, 100 - size
+                elif 150 < y < 200 + size:
+                    x, y = 100 - size, 200 + size
+                # Top wall, left border
+                elif 300 - size < y < 350:
+                    x, y = 100 - size, 200 - size
+                elif 350 < y < 400 + size:
+                    x, y = 100 - size, 400 + size
+
+            elif 150 <= x < 200 + size:
+                # Bottom wall, right border
+                if 100 - size < y < 150:
+                    x, y = 200 + size, 100 - size
+                elif 150 < y < 200 + size:
+                    x, y = 200 + size, 200 + size
+                # Top wall, right border
+                elif 300 - size < y < 350:
+                    x, y = 200 + size, 300 - size
+                elif 350 < y < 400 + size:
+                    x, y = 200 + size, 400 + size'''
+                
+
         elif maze.name == 'maze_four':
             if 100 - size < x < 200 + size:
                 for k in range(4):

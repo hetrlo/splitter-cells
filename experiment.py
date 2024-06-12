@@ -27,7 +27,7 @@ class Experiment:
         self.cues = cues
 
         if task == "R-L":
-            sensor_size = 60
+            sensor_size = 20
         # Bigger sensor because the task is more challenging
         elif task == "RR-LL":
             sensor_size = 80

@@ -25,9 +25,9 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'maze'
+maze = 'maze' # 'maze', 'maze_four'
 task = 'R-L' #'RR-LL', 'R-L'
-simulation_mode = "walls"  # 'data', 'walls', 'esn'
+simulation_mode = "esn"  # 'data', 'walls', 'esn'
 cues = False
 save_reservoir_states = False
 save_bot_states = False
@@ -38,10 +38,10 @@ if __name__ == '__main__':
     if task == 'R-L':
         print('Run the alternation task (R-L) ...')
         if cues:
-            model_file = "model_settings/model_RL_cues.json"
+            model_file = "model_settings/model_RL_cues_.json"
             data_folder = "data/R-L_60/cues/"
         else:
-            model_file = "model_settings/model_RL_no_cues.json"
+            model_file = "model_settings/model_RL_no_cues_.json"
             data_folder = "data/R-L_60/no_cues/"
     elif task == 'RR-LL':
         print('Run the half-alternation task (RR-LL) ...')

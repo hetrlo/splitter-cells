@@ -77,7 +77,7 @@ class Maze:
                                [(0, 0), (0, 0)]]
 
         self.alternate = None
-        self.iter = 0 # Sert pour le RR-LL
+        self.iter = 0
         self.in_corridor = False
 
     def draw(self, ax, grid=True, margin=5):
@@ -154,7 +154,8 @@ class Maze:
             pass
 
 class MazeFour:
-
+    """ A maze with 4 walls along the y axis
+    """
     def __init__(self, simulation_mode = "esn"):
         self.name = 'maze_four'
         self.walls = np.array([
@@ -184,7 +185,7 @@ class MazeFour:
             [(200, 450), (100, 450)],
             [(100, 450), (100, 400)],
 
-        # Moving walls (invisibles) to constraining bot path : from index 20 to end
+        # Moving walls (invisible) to constraining bot path : from index 20 to end
             [(0, 250), (100, 200)],
             [(200, 300), (300, 250)]
         ])
@@ -208,13 +209,14 @@ class MazeFour:
         # Building a filled patch from walls
         V, C, S = [], [], self.walls[:20] # Visible walls
         n_walls = len(S)//4 # For now is ok, but careful
-        for k in range(len(self.walls)//4):
+        for k in range(n_walls):
             V.extend(S[4*k + i, 0] for i in [0, 1, 2, 3, 0])
 
         C = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO, Path.CLOSEPOLY] * n_walls
         path = Path(V, C)
         patch = PathPatch(path, clip_on=False, linewidth=1.5,
                           edgecolor="black", facecolor="white")
+        
 
         # Set figure limits, grid and ticks
         ax.set_axisbelow(True)
@@ -245,6 +247,15 @@ class MazeFour:
         else:
             pass
 
+    def update_walls_4_loop(self, bot_position):# TODO: finish this function
+        """ Add the invisible walls to alternate right and left between the four holes."""
+        if bot_position[1] < 100:
+            self.walls[20:] = [[(0, 175), (100, 225)],
+                               [(200, 125), (300, 175)]]
+        elif bot_position[1] > 450:
+            self.walls[20:] = [[(0, 275), (100, 225)],
+                               [(200, 325), (300, 275)]]
+
     def update_walls_RR_LL(self, bot_position):
         """ Add the invisible walls to force the bot alternating right and left direction every other time."""
         if 250 < bot_position[1] < 300:
@@ -274,4 +285,3 @@ class MazeFour:
                                [(200, 300), (300, 250)]]
         else:
             pass
-
