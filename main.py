@@ -26,12 +26,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 maze = 'random_walls' # 'maze', 'maze_four', 'random_walls'
-task = 'wander' #'RR-LL', 'R-L'
-simulation_mode = "walls"  # 'data', 'walls', 'esn'
+task = 'wander' #'RR-LL', 'R-L', 'wander'
+simulation_mode = "esn"  # 'data', 'walls', 'esn'
 cues = False
 save_reservoir_states = False
 save_bot_states = False
-path_to_save = './trials'
+path_to_save = './trials/'
 
 
 if __name__ == '__main__':
@@ -43,7 +43,7 @@ if __name__ == '__main__':
         else:
             model_file = "model_settings/model_RL_no_cues_.json"
             data_folder = "data/R-L_60/no_cues/"
-    elif task == 'RR-LL' or task == 'wander': # TODO : virer ce truc affreux, c'est super faux
+    elif task == 'RR-LL':
         print('Run the half-alternation task (RR-LL) ...')
         if cues:
             model_file = "model_settings/model_RR-LL_cues.json"
@@ -52,6 +52,11 @@ if __name__ == '__main__':
             model_file = "model_settings/model_RR-LL_no_cues.json"
             data_folder = "data/RR-LL/no_cues/"
             data_folder = "data/RR-LL/no_cues/error_case/"
+    elif task == 'wander':
+        print("Run the wander around and find out task :)")
+        model_file = "trials/model_settings_wander.json"
+        data_folder = "trials/"
+
     else:
         raise Exception("Task name {}".format(task) + " is not recognized.")
 
