@@ -308,11 +308,11 @@ class RandomWalls:
         # Surrounding walls
         self.walls = create_wall((0,0), (300,0), (300,500), (0,500))
         # 1st hole
-        self.walls += create_wall((50,100), (100,100), (100,200), (50,200))
+        self.walls += create_wall((0,30), (50,30), (50,160), (0,160))
         # 2nd hole
         self.walls += create_wall((200,300), (250,300), (250,350), (200,350))
         # 3rd hole
-        self.walls += create_wall((50, 275), (100, 275), (100, 325), (50, 325))
+        self.walls += create_wall((0, 275), (100, 275), (100, 325), (0, 325))
         # 4th hole
         self.walls += create_wall((200, 450), (300, 450), (300, 500), (200, 500))
         # Corner 1st piece

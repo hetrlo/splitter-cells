@@ -32,7 +32,7 @@ class Experiment:
         elif task == "RR-LL":
             sensor_size = 80
         elif task == "wander":
-            sensor_size = 60
+            sensor_size = 80
 
         self.bot = Bot(save_bot_states, sensor_size=sensor_size)
         # Init of the maze
