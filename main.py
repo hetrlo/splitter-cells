@@ -31,7 +31,7 @@ simulation_mode = "esn"  # 'data', 'walls', 'esn'
 cues = False
 save_reservoir_states = False
 save_bot_states = False
-path_to_save = './trials/'
+path_to_save = './trials/reservoir_states/'
 
 
 if __name__ == '__main__':

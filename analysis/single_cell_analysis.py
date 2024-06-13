@@ -579,7 +579,7 @@ def plot_hippocampal_cells_3():
 
         return scat
     fig, axes = plt.subplots(1, 3, figsize=(12, 4))  # Increased figure width
-    path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/reservoir_states/"
     positions = load_positions(path)
     res_activity = load_reservoir_states(path)
 
@@ -624,7 +624,7 @@ def plot_head_direction_cells():
         Returns:
         None
         """
-    path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/reservoir_states/"
     res_activity = load_reservoir_states(path)
     orientations = load_orientations(path)
 
@@ -634,7 +634,7 @@ def plot_head_direction_cells():
         res = res_activity[i]
         corr_array.append(np.corrcoef(res, np.squeeze(orientations))[0][1])
     indexes = np.argsort(corr_array)
-    most_correlated = indexes[:5]
+    most_correlated = [indexes[0], indexes[300], indexes[600], indexes[900], indexes[1200]]
 
     inverted_res_activity = np.mean(res_activity) - res_activity
 
@@ -852,12 +852,12 @@ def plot_RSA_matrix(cues=False):
 
 
 if __name__ == '__main__':
-    #raster_plot()
-    #plot_head_direction_cells()
-    #plot_hippocampal_cells_3()
-    plot_splitter_cells_count()
+    #raster_plot() # Specific to the loop
+    plot_head_direction_cells()
+    #plot_hippocampal_cells_3() # Loop, corner and place cells
+    #plot_splitter_cells_count()
     #plot_splitter_cells_during_error_trial()
-    #plot_RSA_matrix(cues=False)
+    #plot_RSA_matrix(cues=False) # Specific to the original maze
     #test()
     #plot_splitter_cells_activity()
 
