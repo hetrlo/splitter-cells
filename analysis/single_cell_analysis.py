@@ -548,7 +548,67 @@ def plot_hippocampal_cells_9():
     plt.show()
 
 
+def plot_hippocampal_cells(neurons):
+    """This function visualizes the activity of hippocampal cells for chosen neurons.
 
+    Returns:
+    None
+    """
+
+    def plot_place_cells(ax, place_cells, line, res_activity, positions, start_path, end_path):
+        x = positions[start_path:end_path, 0]
+        y = positions[start_path:end_path, 1]
+        cmap = plt.get_cmap('coolwarm')
+
+        z = res_activity[start_path:end_path, place_cells]
+        scat = ax.scatter(x, y, c=z, s=200, cmap=cmap, linewidth=0.1, alpha=0.5)
+
+        ax.set_title('Neuron {}'.format(place_cells), fontsize=14)
+
+        if line == 2:
+            ax.set_xlabel('X', fontsize=14)
+
+        ax.set_ylabel('Y', fontsize=14)
+        ax.margins(0.05)
+        ax.set_yticks([])
+        ax.set_xticks([])
+        ax.set_facecolor('#f0f0f0')
+        ax.tick_params(axis='both', which='major', labelsize=12)
+
+        return scat
+    
+    fig, axes = plt.subplots(1, len(neurons), figsize=(12, 4))  # Increased figure width
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/reservoir_states/"
+    positions = load_positions(path)
+    res_activity = load_reservoir_states(path)
+
+    start_path = 364
+    end_path = 1089
+
+    for ax, neuron in zip(axes, neurons):
+        plot_place_cells(ax=ax, place_cells=neuron, line=2,
+                         res_activity=res_activity, positions=positions,
+                         start_path=start_path, end_path=end_path)
+
+    cbar_ax = fig.add_axes([0.87, 0.15, 0.02, 0.7])  # [left, bottom, width, height]
+    cb = plt.colorbar(ax.collections[0], cax=cbar_ax)
+    cb.set_label('Activity level', fontsize=12, rotation=90,
+                 labelpad=5)  # Set label at the top with horizontal orientation
+    cb.ax.tick_params(labelsize=10)
+
+    # Define custom ticks and labels
+    ticks = [np.min(ax.collections[0].get_array()),
+             (np.max(ax.collections[0].get_array()) + np.min(ax.collections[0].get_array())) / 2,
+             np.max(ax.collections[0].get_array())]
+    tick_labels = ['min', 'medium', 'max']
+    cb.set_ticks(ticks)
+    cb.set_ticklabels(tick_labels)
+
+    cb.solids.set_alpha(1)
+
+    plt.tight_layout()
+    plt.subplots_adjust(right=0.85)
+    plt.show()
 
 def plot_hippocampal_cells_3():
     """This function visualizes the activity of hippocampal cells for neurons 196, 257, and 383.
