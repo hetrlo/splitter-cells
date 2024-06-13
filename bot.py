@@ -66,7 +66,6 @@ class Bot:
         """Imposes restrictions to confine the bot within the walls."""
         x, y = self.position
         size = self.size
-        margin = 5 # The distance the bot aims to keep with walls
 
         max_x = 300
         min_x = 0
@@ -100,11 +99,11 @@ class Bot:
             for k in range(len(walls)//4):
                 hole = [walls[4*k+i] for i in range(4)]
                 # Setting the borders along x and y axis
-                x_low_bound = hole[0][0][0] - margin
-                x_up_bound = hole[1][0][0] + margin
-                y_low_bound = hole[1][0][1] - margin
-                y_up_bound = hole[1][1][1] + margin
-                if x_low_bound - size <= x <= x_up_bound:
+                x_low_bound = hole[0][0][0]
+                x_up_bound = hole[1][0][0]
+                y_low_bound = hole[1][0][1]
+                y_up_bound = hole[1][1][1]
+                if x_low_bound - size <= x <= x_up_bound + size:
                     if y_low_bound - size <= y <= y_up_bound + size:
                         border = [x_low_bound-size, x_up_bound+size, y_low_bound-size, y_up_bound+size]
                         [x,y] = avoid_wall_coordinates(x, y, border)
