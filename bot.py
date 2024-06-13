@@ -105,7 +105,7 @@ class Bot:
                 y_low_bound = hole[1][0][1] - margin
                 y_up_bound = hole[1][1][1] + margin
                 if x_low_bound - size <= x <= x_up_bound:
-                    if y_low_bound - size <= y <= y_up_bound:
+                    if y_low_bound - size <= y <= y_up_bound + size:
                         border = [x_low_bound-size, x_up_bound+size, y_low_bound-size, y_up_bound+size]
                         [x,y] = avoid_wall_coordinates(x, y, border)
             return [x,y]

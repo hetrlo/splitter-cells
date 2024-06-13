@@ -1,13 +1,13 @@
 {"cues": 0,
   "seed" : 1234,
-"n_units": 1000,
-"leak_rate": 0.005,
-"spectral_radius":  0.82,
+"n_units": 1500,
+"leak_rate": 0.03,
+"spectral_radius":  0.8,
 "input_scaling": 1,
-"regularization": 0.002,
+"regularization": 0.02,
 "input_connectivity": 0.2,
 "connectivity": 0.1245,
 "noise_rc": 0,
-"warmup": 100,
-"nb_train": 500
+"warmup": 1000,
+"nb_train": 15000
 }
