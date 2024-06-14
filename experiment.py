@@ -83,6 +83,8 @@ class Experiment:
                 elif self.task == 'wander':
                     pass
             elif self.simulation_mode == 'esn':
+                #if self.task == "wander":
+                #    self.maze.update_walls(self.bot.position)
                 self.bot.update_position(self.maze)
                 self.bot.orientation = self.model.process(self.bot.sensors, cues)
 

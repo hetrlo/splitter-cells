@@ -7,8 +7,8 @@ class Bot:
 
     def __init__(self, save_bot_sates, sensor_size):
         self.size = 10
-        self.position = 150, 250
-        self.orientation = 0
+        self.position = 200, 25
+        self.orientation = 60
         self.n_sensors = 8
 
         # Direction flag
@@ -41,8 +41,8 @@ class Bot:
         # Two points per segment
         n = 2 * len(self.sensors["angle"])
         sensors = LineCollection(np.zeros((n, 2, 2)),
-                                 colors=["0.75", "0.00"] * n,
-                                 linewidths=[0.75, 1.00] * n,
+                                 colors=["0.75", "0.00"] * n, # ["blue", "blue"]*(n//4) + ["red", "red"]*(n//4)
+                                 linewidths=[0.75, 1.00] * n, # to color the left sensors in red and the right ones in blue
                                  linestyles=["--", "-"] * n)
         # Body
         body = Circle(self.position, self.size, zorder=20, edgecolor="black", facecolor=(1, 1, 1, .75))

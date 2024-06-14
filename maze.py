@@ -238,12 +238,12 @@ class MazeFour:
 
     def update_walls(self, bot_position): # Inherited from Maze : task R-L
         """ Add the invisible walls to force the bot alternating right and left direction."""
-        if bot_position[1] < 100:
-            self.walls[20:] = [[(0, 275), (100, 325)],
-                               [(200, 225), (300, 275)]]
-        elif bot_position[1] > 450:
-            self.walls[20:] = [[(0, 275), (100, 225)],
-                               [(200, 325), (300, 275)]]
+        if bot_position[1] < 250:
+            self.walls[20:] = [[(0, 275), (100, 250)],
+                               [(200, 300), (300, 275)]]
+        elif bot_position[1] > 300:
+            self.walls[20:] = [[(0, 275), (100, 300)],
+                               [(200, 250), (300, 275)]]
         else:
             pass
 
@@ -263,30 +263,31 @@ class MazeFour:
     def update_walls_RR_LL(self, bot_position):
         """ Add the invisible walls to force the bot alternating right and left direction every other time."""
         if 250 < bot_position[1] < 300:
-            if not self.in_corridor:
-                if self.iter == 1:
-                    self.iter = 0
-                else:
-                    self.iter += 1
-            self.in_corridor = True
+            if 125 < bot_position[0] < 175:
+                if not self.in_corridor:
+                    if self.iter == 1:
+                        self.iter = 0
+                    else:
+                        self.iter += 1
+                self.in_corridor = True
         else:
             self.in_corridor = False
 
-        if bot_position[1] < 100 and self.iter < 1:
-            self.walls[20:] = [[(0, 250), (100, 300)],
-                               [(200, 300), (300, 250)]]
+        if bot_position[1] < 250 and self.iter < 1:
+            self.walls[20:] = [[(0, 275), (100, 325)],
+                               [(200, 325), (300, 275)]]
 
-        elif bot_position[1] < 100 and self.iter == 1:
-                self.walls[20:] = [[(0, 250), (100, 300)],
-                                   [(200, 100), (300, 250)]]
+        elif bot_position[1] < 259 and self.iter == 1:
+                self.walls[20:] = [[(0, 275), (100, 325)],
+                                   [(200, 225), (300, 275)]]
 
-        elif bot_position[1] > 450 and self.iter < 1:
-            self.walls[20:] = [[(0, 250), (100, 200)],
-                               [(200, 200), (300, 250)]]
+        elif bot_position[1] > 300 and self.iter < 1:
+            self.walls[20:] = [[(0, 275), (100, 225)],
+                               [(200, 225), (300, 275)]]
 
-        elif bot_position[1] > 450 and self.iter == 1:
-            self.walls[20:] = [[(0, 250), (100, 200)],
-                               [(200, 300), (300, 250)]]
+        elif bot_position[1] > 300 and self.iter == 1:
+            self.walls[20:] = [[(0, 275), (100, 225)],
+                               [(200, 325), (300, 275)]]
         else:
             pass
 
