@@ -578,12 +578,12 @@ def plot_hippocampal_cells(neurons):
         return scat
     
     fig, axes = plt.subplots(1, len(neurons), figsize=(12, 4))  # Increased figure width
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
     positions = load_positions(path)
     res_activity = load_reservoir_states(path)
 
-    start_path = 364
-    end_path = 1089
+    start_path = 300
+    end_path = 1500
 
     for ax, neuron in zip(axes, neurons):
         plot_place_cells(ax=ax, place_cells=neuron, line=2,
@@ -684,7 +684,7 @@ def plot_head_direction_cells():
         Returns:
         None
         """
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
     res_activity = load_reservoir_states(path)
     orientations = load_orientations(path)
 
@@ -694,7 +694,7 @@ def plot_head_direction_cells():
         res = res_activity[i]
         corr_array.append(np.corrcoef(res, np.squeeze(orientations))[0][1])
     indexes = np.argsort(corr_array)
-    most_correlated = [indexes[0], indexes[300], indexes[600], indexes[900], indexes[1200]]
+    most_correlated = [indexes[-1]]
 
     inverted_res_activity = np.mean(res_activity) - res_activity
 
@@ -707,11 +707,12 @@ def plot_head_direction_cells():
     ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
     color = 'black'
 
+    coef = corr_array[indexes[-1]]
     # Move the ax2.set_ylabel outside of the loop to set it only once
-    ax2.set_ylabel('Most correlated cells', color=color)
+    ax2.set_ylabel('Most correlated cell : coef =' + str(coef), color=color)
 
     for neuron in most_correlated:
-        ax2.plot(np.mean(res_activity[neuron]) - res_activity[neuron], color=color, linewidth=0.5, alpha=1)
+        ax2.plot(res_activity[neuron] - np.mean(res_activity[neuron]), color=color, linewidth=0.5, alpha=1)
 
     ax2.tick_params(axis='y', labelcolor=color)
 
@@ -910,10 +911,12 @@ def plot_RSA_matrix(cues=False):
     plt.show()
 
 
-
+from random import seed, sample
+seed(56)
 if __name__ == '__main__':
     #raster_plot() # Specific to the loop
-    plot_head_direction_cells()
+    #plot_head_direction_cells()
+    plot_hippocampal_cells(sample(range(0,1499),5))
     #plot_hippocampal_cells_3() # Loop, corner and place cells
     #plot_splitter_cells_count()
     #plot_splitter_cells_during_error_trial()

@@ -1,4 +1,4 @@
-from maze import Maze, MazeFour, RandomWalls
+from maze import Maze, MazeFour, RandomWalls, MazeOther
 from bot import Bot
 from simulation_visualizer import SimulationVisualizer
 import numpy as np
@@ -42,6 +42,8 @@ class Experiment:
             self.maze = MazeFour(simulation_mode=simulation_mode)
         elif maze == 'random_walls':
             self.maze = RandomWalls(simulation_mode=simulation_mode)
+        elif maze == 'maze_other':
+            self.maze = MazeOther(simulation_mode=simulation_mode)
         self.simulation_visualizer = SimulationVisualizer(self.bot.n_sensors)
         self.model_file = model_file
         self.data_folder = data_folder

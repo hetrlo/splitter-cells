@@ -7,8 +7,11 @@ class Bot:
 
     def __init__(self, save_bot_sates, sensor_size):
         self.size = 10
-        self.position = 200, 25
-        self.orientation = 60
+        # if maze == random_walls
+        #self.position = 200, 25
+        #self.orientation = 60
+        self.position = 150,300
+        self.orientation = 3
         self.n_sensors = 8
 
         # Direction flag
@@ -117,7 +120,10 @@ class Bot:
             [x,y] = set_constraints(x, y, maze.walls[4:20])
 
         elif maze.name == 'random_walls':
-            [x,y] = set_constraints(x, y, maze.walls[4:])          
+            [x,y] = set_constraints(x, y, maze.walls[4:])   
+
+        elif maze.name == 'maze_other':
+            [x,y] = set_constraints(x, y, maze.walls[4:]) 
 
         self.position = (x, y)
 

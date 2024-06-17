@@ -25,13 +25,13 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'random_walls' # 'maze', 'maze_four', 'random_walls'
+maze = 'maze_other' # 'maze', 'maze_four', 'random_walls'
 task = 'wander' #'RR-LL', 'R-L', 'wander'
-simulation_mode = "esn"  # 'data', 'walls', 'esn'
+simulation_mode = 'walls'  # 'data', 'walls', 'esn'
 cues = False
 save_reservoir_states = False
 save_bot_states = False
-path_to_save = './trials/reservoir_states/'
+path_to_save = './trials/states/'
 
 
 if __name__ == '__main__':
@@ -54,8 +54,8 @@ if __name__ == '__main__':
             data_folder = "data/RR-LL/no_cues/error_case/"
     elif task == 'wander':
         print("Run the wander around and find out task :)")
-        model_file = "trials/model_settings_wander.json"
-        data_folder = "trials/"
+        model_file = "trials/first_attempt/model_settings_wander_first_attempt.json"
+        data_folder = "trials/first_attempt/"
 
     else:
         raise Exception("Task name {}".format(task) + " is not recognized.")

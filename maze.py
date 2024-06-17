@@ -291,20 +291,21 @@ class MazeFour:
         else:
             pass
 
+
+# Function to create a wall, given the corners
+def create_wall(bl, br, tr, tl): # bottom-left, bottom-right...
+    return [
+        [bl,br],
+        [br,tr],
+        [tr,tl],
+        [tl,bl]
+    ]
 class RandomWalls:
     """ A maze with random objects
     """
 
     def __init__(self, simulation_mode = "esn"):
         self.name = 'random_walls'
-
-        def create_wall(bl, br, tr, tl): # bottom-left, bottom-right...
-            return [
-                [bl,br],
-                [br,tr],
-                [tr,tl],
-                [tl,bl]
-            ]
 
         # Surrounding walls
         self.walls = create_wall((0,0), (300,0), (300,500), (0,500))
@@ -320,6 +321,83 @@ class RandomWalls:
         self.walls += create_wall((150, 50), (250, 50), (250, 100), (150, 100))
         # Corner 2nd piece
         self.walls += create_wall((200, 100), (250, 100), (250, 150), (200, 150))
+        self.walls = np.array(self.walls)
+        
+        if simulation_mode == "walls":
+            self.invisible_walls = True
+        else:
+            self.invisible_walls = False
+            #for k in range(28, len(self.walls)):
+            #    self.walls[k] = [(0, 0), (0, 0)]
+
+        self.alternate = None
+        self.iter = 0 # Sert pour le RR-LL
+        self.in_corridor = False
+
+    def draw(self, ax, grid=True, margin=5):
+        """
+        Render the maze
+        """
+
+        # Building a filled patch from walls
+        V, C, S = [], [], self.walls # Visible walls
+        n_walls = len(S)//4 # For now is ok, but careful
+        for k in range(n_walls):
+            V.extend(S[4*k + i, 0] for i in [0, 1, 2, 3, 0])
+
+        C = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO, Path.CLOSEPOLY] * n_walls
+        path = Path(V, C)
+        patch = PathPatch(path, clip_on=False, linewidth=1.5,
+                          edgecolor="black", facecolor="white")
+        
+
+        # Set figure limits, grid and ticks
+        ax.set_axisbelow(True)
+        ax.add_artist(patch)
+        ax.set_xlim(0 - margin, 300 + margin)
+        ax.set_ylim(0 - margin, 500 + margin)
+        if grid:
+            ax.xaxis.set_major_locator(MultipleLocator(100))
+            ax.xaxis.set_minor_locator(MultipleLocator(10))
+            ax.yaxis.set_major_locator(MultipleLocator(100))
+            ax.yaxis.set_minor_locator(MultipleLocator(10))
+            ax.grid(True, "major", color="0.75", linewidth=1.00, clip_on=False)
+            ax.grid(True, "minor", color="0.75", linewidth=0.50, clip_on=False)
+        ax.set_xticklabels([])
+        ax.set_yticklabels([])
+        ax.tick_params(axis='both', which='major', size=0)
+        ax.tick_params(axis='both', which='minor', size=0)
+
+class MazeOther:
+    """ A maze with random objects to generate a pseudo random trajectory
+    """
+
+    def __init__(self, simulation_mode = "esn"):
+        self.name = 'maze_other'
+
+        # Surrounding walls
+        self.walls = create_wall((0,0), (300,0), (300,500), (0,500))
+        # 1st hole
+        self.walls += create_wall((75,70), (100,70), (100,105), (75,105))
+        # 2nd hole
+        self.walls += create_wall((160,150), (250,150), (250,175), (160,175))
+        # 2nd hole bottom piece
+        self.walls += create_wall((215,75), (250,75), (250,150), (215,150))
+        # 2nd hole top piece
+        self.walls += create_wall((125,175), (185,175), (185,200), (125,200))
+        # 2nd hole botbot piece
+        self.walls += create_wall((150,50), (250,50), (250,75), (150,75))
+        # 3rd hole
+        self.walls += create_wall((220,285), (245,285), (245,375), (220,375))
+        # 3rd hole bottom piece
+        self.walls += create_wall((220,260), (300,260), (300,285), (220,285))
+        # 3rd hole top piece
+        self.walls += create_wall((245,350), (300,350), (300,375), (245,375))
+        # 4th hole
+        self.walls += create_wall((75,350), (100,350), (100,450), (75,450))
+        # 5th hole
+        self.walls += create_wall((50,225), (75,225), (75,275), (50,275))
+        
         self.walls = np.array(self.walls)
         
         if simulation_mode == "walls":
