@@ -59,7 +59,7 @@ class Bot:
         # List of artists to be rendered (sensors, body, head)
 
         # self.artists = [sensors, body, head]
-        self.artists = [sensors, body, head]#, direction_KNN]
+        self.artists = [sensors, body, head] #, direction_KNN]
 
         ax.add_collection(sensors)
         ax.add_artist(body)

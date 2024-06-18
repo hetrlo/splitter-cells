@@ -5,40 +5,17 @@ An analysis of the bot's trajectory, to quantify its exploration of the maze
 
 import numpy as np
 import matplotlib.pyplot as plt
+from math import *
 
 def load_positions(path):
-    """Load position data from a specified path.
-
-        Args:
-        path (str): The path to the directory containing the position data file.
-
-        Returns:
-        numpy.ndarray: An array containing position data.
-        """
     return np.load(path + 'positions.npy')
 
 
 def load_reservoir_states(path):
-    """Load reservoir state data from a specified path.
-
-        Args:
-        path (str): The path to the directory containing the reservoir state data file.
-
-        Returns:
-        numpy.ndarray: An array containing reservoir state data.
-        """
     return np.load(path + 'reservoir_states.npy')
 
 
 def load_orientations(path):
-    """Load orientation data from a specified path.
-
-        Args:
-        path (str): The path to the directory containing the orientation data file.
-
-        Returns:
-        numpy.ndarray: An array containing orientation data.
-        """
     return np.load(path + 'output.npy')
 
 def load_sensors(path):
@@ -62,3 +39,22 @@ def walls_collision_percentage():
     collision = np.array([is_collision(sensors[i]) for i in range(len_record)])
     nb_collisions = np.count_nonzero(collision)
     return (nb_collisions / len_record) * 100
+
+# Determins how uniformely the bot explores the maze
+def exploratory_rate(resolution):
+    movement_repartition = np.zeros(resolution)
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/states/"
+    positions = load_positions(path)
+    len_record = len(positions)
+
+    for i in range(len_record):
+        # Computing correspondance between position and indexes in the repartition matrix
+        x = floor((positions[i][0] / 300) * resolution[0])
+        y = floor((positions[i][1] / 500) * resolution[1])
+        movement_repartition[x,y] += 1
+    
+    # Normalizing the array
+    movement_repartition /= np.std(movement_repartition)
+
+    plt.imshow(movement_repartition.T, cmap='inferno', origin='lower')
+    plt.show()

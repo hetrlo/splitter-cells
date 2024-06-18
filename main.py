@@ -27,12 +27,12 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'maze_other' # 'maze', 'maze_four', 'random_walls', 'maze_other'
+maze = 'maze' # 'maze', 'maze_four', 'random_walls', 'maze_other'
 task = 'wander' #'RR-LL', 'R-L', 'wander'
 simulation_mode = 'walls'  # 'data', 'walls', 'esn'
 cues = False
 save_reservoir_states = False
-save_bot_states = False
+save_bot_states = True
 path_to_save = './trials/states/'
 
 
