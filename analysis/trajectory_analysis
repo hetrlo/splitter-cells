@@ -1,0 +1,64 @@
+"""
+An analysis of the bot's trajectory, to quantify its exploration of the maze
+
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def load_positions(path):
+    """Load position data from a specified path.
+
+        Args:
+        path (str): The path to the directory containing the position data file.
+
+        Returns:
+        numpy.ndarray: An array containing position data.
+        """
+    return np.load(path + 'positions.npy')
+
+
+def load_reservoir_states(path):
+    """Load reservoir state data from a specified path.
+
+        Args:
+        path (str): The path to the directory containing the reservoir state data file.
+
+        Returns:
+        numpy.ndarray: An array containing reservoir state data.
+        """
+    return np.load(path + 'reservoir_states.npy')
+
+
+def load_orientations(path):
+    """Load orientation data from a specified path.
+
+        Args:
+        path (str): The path to the directory containing the orientation data file.
+
+        Returns:
+        numpy.ndarray: An array containing orientation data.
+        """
+    return np.load(path + 'output.npy')
+
+def load_sensors(path):
+    return np.load(path + 'input.npy')
+
+# Computes the percentage of time the bot touches the walls
+def walls_collision_percentage():
+    sensitivity = 0.05 # sensitivity of the sensors
+
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/states/"
+    sensors = load_sensors(path)
+    len_record = len(sensors)
+
+    # Determins wether the bot was in a wall at a given step
+    def is_collision(sensors_values):
+        collision = False
+        for i in range(len(sensors_values)):
+            collision = collision or (sensors_values[i] < sensitivity)
+        return collision
+    
+    collision = np.array([is_collision(sensors[i]) for i in range(len_record)])
+    nb_collisions = np.count_nonzero(collision)
+    return (nb_collisions / len_record) * 100

@@ -21,6 +21,7 @@ import matplotlib.gridspec as gridspec
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
 import seaborn as sns
+import reservoirpy.nodes as rp
 plt.rc('font', size=12)
 
 
@@ -59,6 +60,27 @@ def load_orientations(path):
         """
     return np.load(path + 'output.npy')
 
+
+def position_from_activity(): # A opti, très clairement.
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
+    positions = load_positions(path)
+    positions = np.array([positions[:,0], positions[:,1]]).transpose()
+    print(positions.shape)
+    activity = load_reservoir_states(path)
+
+    reservoir = rp.Reservoir(1000, input_scaling=1, sr=0.9,
+                            lr=0.5, rc_connectivity=0.2,
+                            input_connectivity=0.1, seed=1, noise_rc=0)
+
+    readout = rp.Ridge(ridge=0.002)
+    esn = reservoir >> readout
+    X_train, Y_train, X_test, Y_test = activity[:1000], positions[:1000], activity[1000:], positions[1000:]
+
+    esn.fit(X_train, Y_train, warmup=100)
+    pos_pred = esn.run(X_test)
+    plt.plot(pos_pred, label="Position prediction from activity")
+    plt.plot(Y_test, label="Actual position")
+    plt.show()
 
 def find_location_indexes(y_positions):
     """
@@ -558,7 +580,7 @@ def plot_hippocampal_cells(neurons):
     def plot_place_cells(ax, place_cells, line, res_activity, positions, start_path, end_path):
         x = positions[start_path:end_path, 0]
         y = positions[start_path:end_path, 1]
-        cmap = plt.get_cmap('coolwarm')
+        cmap = plt.get_cmap('jet', 5)
 
         z = res_activity[start_path:end_path, place_cells]
         scat = ax.scatter(x, y, c=z, s=200, cmap=cmap, linewidth=0.1, alpha=0.5)
@@ -916,12 +938,11 @@ seed(56)
 if __name__ == '__main__':
     #raster_plot() # Specific to the loop
     #plot_head_direction_cells()
-    plot_hippocampal_cells(sample(range(0,1499),5))
+    plot_hippocampal_cells([1457,323,1251,267,245])
     #plot_hippocampal_cells_3() # Loop, corner and place cells
     #plot_splitter_cells_count()
     #plot_splitter_cells_during_error_trial()
     #plot_RSA_matrix(cues=False) # Specific to the original maze
-    #test()
     #plot_splitter_cells_activity()
 
 

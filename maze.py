@@ -378,25 +378,29 @@ class MazeOther:
         # Surrounding walls
         self.walls = create_wall((0,0), (300,0), (300,500), (0,500))
         # 1st hole
-        self.walls += create_wall((75,70), (100,70), (100,105), (75,105))
+        self.walls += create_wall((75,70), (100,70), (100,115), (75,115))
         # 2nd hole
         self.walls += create_wall((160,150), (250,150), (250,175), (160,175))
         # 2nd hole bottom piece
         self.walls += create_wall((215,75), (250,75), (250,150), (215,150))
         # 2nd hole top piece
-        self.walls += create_wall((125,175), (185,175), (185,200), (125,200))
+        self.walls += create_wall((120,175), (185,175), (185,200), (120,200))
         # 2nd hole botbot piece
         self.walls += create_wall((150,50), (250,50), (250,75), (150,75))
         # 3rd hole
         self.walls += create_wall((220,285), (245,285), (245,375), (220,375))
         # 3rd hole bottom piece
-        self.walls += create_wall((220,260), (300,260), (300,285), (220,285))
+        self.walls += create_wall((165,255), (300,255), (300,285), (165,285))
         # 3rd hole top piece
         self.walls += create_wall((245,350), (300,350), (300,375), (245,375))
         # 4th hole
-        self.walls += create_wall((75,350), (100,350), (100,450), (75,450))
+        self.walls += create_wall((70,340), (100,340), (100,440), (70,440))
+        # 4th hole middle piece
+        self.walls += create_wall((100,330), (130,330), (130,370), (100,370))
         # 5th hole
-        self.walls += create_wall((50,225), (75,225), (75,275), (50,275))
+        self.walls += create_wall((40,220), (60,220), (60,260), (40,260))
+        # 6th hole
+        self.walls += create_wall((130,480), (170,480), (170,500), (130,500))
         
         self.walls = np.array(self.walls)
         

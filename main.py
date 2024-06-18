@@ -13,7 +13,9 @@ Before running the script, certain configurations are required:
                 3) 'esn': the bot moves based on ESN predictions, trained using supervised learning.
 
 - save_reservoir_states: set to True if the reservoir states and the bot's positions and orientation need to be recorded
-- save_bot_states: set to True if the bot's positions and orientation need to be recorded
+- save_bot_states: set to True if the bot's positions and orientation need to be recorded. Orientation contains the 
+                   orientation of the bot, output its position, and input is a concatenation of cues (if there are) and
+                   of the sensors values
 - path_to_save: folder to save
 
 """
@@ -25,7 +27,7 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'maze_other' # 'maze', 'maze_four', 'random_walls'
+maze = 'maze_other' # 'maze', 'maze_four', 'random_walls', 'maze_other'
 task = 'wander' #'RR-LL', 'R-L', 'wander'
 simulation_mode = 'walls'  # 'data', 'walls', 'esn'
 cues = False

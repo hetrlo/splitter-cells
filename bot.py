@@ -184,7 +184,7 @@ class Bot:
 
         if self.save_bot_sates:
             self.all_orientations.append(self.orientation)
-            self.all_sensors_vals.append(self.sensors['value'].ravel())
+            self.all_sensors_vals.append(self.sensors["value"].ravel().tolist())
             self.all_positions.append(self.position)
             if cues:
                 self.all_cues.append([int(self.right_cue), int(self.left_cue)])
