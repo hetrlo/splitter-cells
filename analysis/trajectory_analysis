@@ -5,6 +5,7 @@ An analysis of the bot's trajectory, to quantify its exploration of the maze
 
 import numpy as np
 import matplotlib.pyplot as plt
+import random as rd
 from math import *
 
 def load_positions(path):
@@ -21,6 +22,18 @@ def load_orientations(path):
 def load_sensors(path):
     return np.load(path + 'input.npy')
 
+# Standardization of an array : values will be in range [0,1]
+def standardize(array):
+    array = np.abs(array)
+    max_arr = np.max(array)
+    min_arr = np.min(array)
+    if max_arr==0:
+        return array
+    if min_arr == max_arr:
+        return array / max_arr
+    return (array - min_arr) / (max_arr - min_arr)
+    
+
 # Computes the percentage of time the bot touches the walls
 def walls_collision_percentage():
     sensitivity = 0.05 # sensitivity of the sensors
@@ -32,29 +45,114 @@ def walls_collision_percentage():
     # Determins wether the bot was in a wall at a given step
     def is_collision(sensors_values):
         collision = False
-        for i in range(len(sensors_values)):
-            collision = collision or (sensors_values[i] < sensitivity)
+        for val in iter(sensors_values):
+            collision = collision or (val < sensitivity)
         return collision
     
     collision = np.array([is_collision(sensors[i]) for i in range(len_record)])
     nb_collisions = np.count_nonzero(collision)
     return (nb_collisions / len_record) * 100
 
-# Determins how uniformely the bot explores the maze
-def exploratory_rate(resolution):
+# Returns the amount of times the bot encountered each position
+def exploratory_map(resolution):
     movement_repartition = np.zeros(resolution)
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
     positions = load_positions(path)
-    len_record = len(positions)
 
-    for i in range(len_record):
+    for pos in iter(positions):
         # Computing correspondance between position and indexes in the repartition matrix
-        x = floor((positions[i][0] / 300) * resolution[0])
-        y = floor((positions[i][1] / 500) * resolution[1])
+        x = floor((pos[0] / 300) * resolution[0])
+        y = floor((pos[1] / 500) * resolution[1])
         movement_repartition[x,y] += 1
-    
-    # Normalizing the array
-    movement_repartition /= np.std(movement_repartition)
+    return movement_repartition
 
-    plt.imshow(movement_repartition.T, cmap='inferno', origin='lower')
+def plot_exploratory_map(explo_map):
+    # Normalizing the array
+    explo_map /= np.std(explo_map)
+    plt.imshow(explo_map.T, cmap='inferno', origin='lower')
     plt.show()
+
+# Maps the mean neurons activity across the maze (to use to reveal place cells)
+def show_place_fields(resolution):
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
+    res_states = load_reservoir_states(path)
+    positions = load_positions(path)
+
+    activity_map = np.zeros(resolution)
+    movement_repartition = exploratory_map(resolution)
+
+    for i,pos in enumerate(positions):
+        # Computing correspondance between position and indexes in the repartition matrix
+        x = floor((pos[0] / 300) * resolution[0])
+        y = floor((pos[1] / 500) * resolution[1])
+    
+        for j,state in enumerate(res_states[i]):
+            if movement_repartition[x,y] != 0:
+                activity_map[x,y] += state / movement_repartition[x,y]
+            else:
+                activity_map[x,y] = 0
+
+    activity_map /= np.std(activity_map)
+
+    plt.imshow(activity_map.T, cmap='inferno', origin='lower')
+    plt.show()
+
+# Detecting place cells using the Peak method
+def place_cells_detection(resolution):
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
+    res_states = load_reservoir_states(path)
+    #res_states = np.array([res_states.T[953], res_states.T[1457], res_states.T[323], res_states.T[1251], res_states.T[267]]).T
+    res_states = np.array([res_states.T[81], res_states.T[1486], res_states.T[23], res_states.T[1201]]).T
+    positions = load_positions(path)
+    nb_neurons = len(res_states[0])
+    explo_map = exploratory_map(resolution)
+
+    # Array with each neurons mean activity across the maze
+    # activity_maps = np.zeros((nb_neurons, resolution[0], resolution[1]))
+
+    # Map for one neuron
+    def activity_map(neuron_activity):
+        map = np.zeros(resolution)
+        for i,pos in enumerate(positions):
+            # Computing correspondance between position and indexes in the repartition matrix
+            x = floor((pos[0] / 300) * resolution[0])
+            y = floor((pos[1] / 500) * resolution[1])
+            if explo_map[x,y] != 0:
+                map[x,y] += neuron_activity[i] / explo_map[x,y]
+            else:
+                map[x,y] = 0
+        map
+        return map
+    
+    # Actual peak for each neuron
+    true_peaks = np.array([np.max(np.abs(activity_map(res_states.T[i]))) for i in range(nb_neurons)])
+
+    # Computing random peaks by shuffling the activity nb_shuffle times for a neuron
+    def random_peaks(neuron_activity, nb_shuffles):
+        peaks = np.zeros(nb_shuffles)
+        for n in range(nb_shuffles):
+            rd.seed(n) # To generate different shuffles : might be a bad idea
+            rd_activity = np.copy(neuron_activity)
+            rd.shuffle(rd_activity) # in place
+            peaks[n] = np.max(np.abs(activity_map(rd_activity)))
+        return peaks
+    
+    # Computing the 99-percentile for each set of activities
+    nb_shuffle = 1000
+    peaks = np.array([np.concatenate((np.array([true_peaks[i]]), random_peaks(res_states.T[i], nb_shuffle))) for i in range(nb_neurons)])
+    percentiles = [np.percentile(peaks[i], 99) for i in range(nb_neurons)]
+
+    is_place_cell = [peaks[i,0] >= percentiles[i] for i in range(nb_neurons)]
+    place_cells = np.argwhere(is_place_cell)
+    return place_cells
+
+
+
+
+#exploratory_map((6,10))
+# print(walls_collision_percentage())
+#show_place_fields((6,10))
+place_cells = place_cells_detection((6,10))
+print(place_cells)
+#plt.imshow(maps[0].T, cmap='inferno', origin='lower')
+#plt.show()

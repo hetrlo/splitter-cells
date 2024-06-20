@@ -580,7 +580,7 @@ def plot_hippocampal_cells(neurons):
     def plot_place_cells(ax, place_cells, line, res_activity, positions, start_path, end_path):
         x = positions[start_path:end_path, 0]
         y = positions[start_path:end_path, 1]
-        cmap = plt.get_cmap('jet', 5)
+        cmap = plt.get_cmap('coolwarm')
 
         z = res_activity[start_path:end_path, place_cells]
         scat = ax.scatter(x, y, c=z, s=200, cmap=cmap, linewidth=0.1, alpha=0.5)
@@ -604,8 +604,8 @@ def plot_hippocampal_cells(neurons):
     positions = load_positions(path)
     res_activity = load_reservoir_states(path)
 
-    start_path = 300
-    end_path = 1500
+    start_path = 0
+    end_path = len(positions)
 
     for ax, neuron in zip(axes, neurons):
         plot_place_cells(ax=ax, place_cells=neuron, line=2,
@@ -934,11 +934,12 @@ def plot_RSA_matrix(cues=False):
 
 
 from random import seed, sample
-seed(56)
+#seed(2)
 if __name__ == '__main__':
     #raster_plot() # Specific to the loop
     #plot_head_direction_cells()
-    plot_hippocampal_cells([1457,323,1251,267,245])
+    #plot_hippocampal_cells([1201,1486,23,81])
+    plot_hippocampal_cells([1486,267,81])
     #plot_hippocampal_cells_3() # Loop, corner and place cells
     #plot_splitter_cells_count()
     #plot_splitter_cells_during_error_trial()
