@@ -6,6 +6,7 @@ An analysis of the bot's trajectory, to quantify its exploration of the maze
 import numpy as np
 import matplotlib.pyplot as plt
 import random as rd
+from scipy.stats import pearsonr
 from math import *
 
 def load_positions(path):
@@ -54,10 +55,8 @@ def walls_collision_percentage():
     return (nb_collisions / len_record) * 100
 
 # Returns the amount of times the bot encountered each position
-def exploratory_map(resolution):
+def exploratory_map(resolution, positions):
     movement_repartition = np.zeros(resolution)
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
-    positions = load_positions(path)
 
     for pos in iter(positions):
         # Computing correspondance between position and indexes in the repartition matrix
@@ -66,7 +65,7 @@ def exploratory_map(resolution):
         movement_repartition[x,y] += 1
     return movement_repartition
 
-def plot_exploratory_map(explo_map):
+def plot_map(explo_map):
     # Normalizing the array
     explo_map /= np.std(explo_map)
     plt.imshow(explo_map.T, cmap='inferno', origin='lower')
@@ -79,7 +78,7 @@ def show_place_fields(resolution):
     positions = load_positions(path)
 
     activity_map = np.zeros(resolution)
-    movement_repartition = exploratory_map(resolution)
+    movement_repartition = exploratory_map(resolution, positions)
 
     for i,pos in enumerate(positions):
         # Computing correspondance between position and indexes in the repartition matrix
@@ -98,14 +97,15 @@ def show_place_fields(resolution):
     plt.show()
 
 # Detecting place cells using the Peak method
-def place_cells_detection(resolution):
+def place_cells_detection_peak(resolution):
     path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
-    res_states = load_reservoir_states(path)
+    r = load_reservoir_states(path)
+    res_states = np.array([r.T[9],r.T[13], r.T[20], r.T[31], r.T[33], r.T[51],r.T[54],r.T[72],r.T[77],r.T[82],r.T[89],r.T[93],r.T[96]]).T
     #res_states = np.array([res_states.T[953], res_states.T[1457], res_states.T[323], res_states.T[1251], res_states.T[267]]).T
-    res_states = np.array([res_states.T[81], res_states.T[1486], res_states.T[23], res_states.T[1201]]).T
+    #res_states = np.array([res_states.T[81], res_states.T[1486], res_states.T[23], res_states.T[1201]]).T
     positions = load_positions(path)
     nb_neurons = len(res_states[0])
-    explo_map = exploratory_map(resolution)
+    explo_map = exploratory_map(resolution, positions)
 
     # Array with each neurons mean activity across the maze
     # activity_maps = np.zeros((nb_neurons, resolution[0], resolution[1]))
@@ -131,7 +131,7 @@ def place_cells_detection(resolution):
     def random_peaks(neuron_activity, nb_shuffles):
         peaks = np.zeros(nb_shuffles)
         for n in range(nb_shuffles):
-            rd.seed(n) # To generate different shuffles : might be a bad idea
+            #rd.seed(n) # To generate different shuffles : might be a bad idea
             rd_activity = np.copy(neuron_activity)
             rd.shuffle(rd_activity) # in place
             peaks[n] = np.max(np.abs(activity_map(rd_activity)))
@@ -139,6 +139,7 @@ def place_cells_detection(resolution):
     
     # Computing the 99-percentile for each set of activities
     nb_shuffle = 1000
+
     peaks = np.array([np.concatenate((np.array([true_peaks[i]]), random_peaks(res_states.T[i], nb_shuffle))) for i in range(nb_neurons)])
     percentiles = [np.percentile(peaks[i], 99) for i in range(nb_neurons)]
 
@@ -146,13 +147,67 @@ def place_cells_detection(resolution):
     place_cells = np.argwhere(is_place_cell)
     return place_cells
 
+def place_cells_detection_stability(resolution):
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
+    res_states = load_reservoir_states(path).T[:100].T
+    #res_states = np.array([res_states.T[953], res_states.T[1457], res_states.T[323], res_states.T[267], res_states.T[1251]]).T
+    ##res_states = np.array([res_states.T[81], res_states.T[1486], res_states.T[23], res_states.T[1201]]).T
+    positions = load_positions(path)
+    nb_neurons = len(res_states[0])
 
+    # Defining halves of the trajectory
+    positions_1, positions_2 = positions[:floor(len(positions)/2)], positions[floor(len(positions)/2):]
+    res_states_1, res_states_2 = res_states[:floor(len(positions)/2)], res_states[floor(len(positions)/2):]
+
+    explo_map_1, explo_map_2 = exploratory_map(resolution, positions_1), exploratory_map(resolution, positions_2)
+
+    # Map for one neuron
+    def activity_map(neuron_activity, positions, explo_map):
+        map = np.zeros(resolution)
+        for i,pos in enumerate(positions):
+            # Computing correspondance between position and indexes in the repartition matrix
+            x = floor((pos[0] / 300) * resolution[0])
+            y = floor((pos[1] / 500) * resolution[1])
+            if explo_map[x,y] != 0:
+                map[x,y] += neuron_activity[i] / explo_map[x,y]
+            else:
+                map[x,y] = 0
+        map
+        return map
+    
+    # Actual maps
+    maps_1 = np.array([activity_map(state, positions_1, explo_map_1) for state in res_states_1.T])
+    maps_2 = np.array([activity_map(state, positions_2, explo_map_2) for state in res_states_2.T])
+
+    # Actual Pearson correlation coefficient between maps values
+    true_coefs = np.array([pearsonr(maps_1[i].ravel(),maps_2[i].ravel()).statistic for i in range(nb_neurons)])
+
+    # Computing coefficients for random maps by shuffling the activity nb_shuffle times for each neuron
+    def random_coefs(m1, nb_shuffles):
+        coefs = np.zeros(nb_shuffles)
+        maps = rd.choices(maps_2, k=nb_shuffles)
+        for n in range(nb_shuffles):
+            coefs[n] = pearsonr(m1.ravel(), maps[n].ravel()).statistic
+        return coefs
+    
+    # Computing the 99-percentile for each set of activities
+    nb_shuffle = 100
+    coefs = np.array([np.concatenate((np.array([true_coefs[i]]), random_coefs(maps_1[i], nb_shuffle))) for i in range(nb_neurons)])
+    percentiles = [np.percentile(coefs[i], 90) for i in range(nb_neurons)]
+
+    is_place_cell = [coefs[i,0] >= percentiles[i] for i in range(nb_neurons)]
+    place_cells = np.argwhere(is_place_cell)
+    return place_cells
 
 
 #exploratory_map((6,10))
-# print(walls_collision_percentage())
+#print(walls_collision_percentage())
 #show_place_fields((6,10))
-place_cells = place_cells_detection((6,10))
-print(place_cells)
+place_cells_peak = place_cells_detection_peak((12,20))
+print(place_cells_peak)
+#place_cells_stab = place_cells_detection_stability((12,20))
+#print(place_cells_stab)
+#print(np.intersect1d(place_cells_peak, place_cells_stab))
+
 #plt.imshow(maps[0].T, cmap='inferno', origin='lower')
 #plt.show()
