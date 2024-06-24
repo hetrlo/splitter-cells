@@ -44,7 +44,7 @@ def walls_collision_percentage():
     len_record = len(sensors)
     print(len_record)
 
-    # Determins wether the bot was in a wall at a given step
+    # Determins whether the bot was in a wall at a given step
     def is_collision(sensors_values):
         collision = False
         for val in iter(sensors_values):
@@ -76,7 +76,7 @@ def plot_map(explo_map):
 def activity_map(neuron_activity, positions, explo_map, resolution):
     map = np.zeros(resolution)
     for i,pos in enumerate(positions):
-        # Computing correspondance between position and indexes in the repartition matrix
+        # Computing correspondance between position and indexes in the exploration matrix
         x = floor((pos[0] / 300) * resolution[0])
         y = floor((pos[1] / 500) * resolution[1])
         if explo_map[x,y] != 0:
@@ -91,7 +91,7 @@ def plot_activity_map(neuron, positions, explo_map, resolution):
     plt.imshow(map.T, cmap = 'gray', origin='lower')
     plt.show()
 
-# Maps the mean neurons activity across the maze (to use to reveal place cells)
+# Maps the mean neurons activity across the maze (to reveal place cells)
 def show_place_fields(resolution):
     path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
     res_states = load_reservoir_states(path)
@@ -124,13 +124,13 @@ def show_place_fields(resolution):
 
 # Detecting place cells using the Peak method
 def place_cells_detection_peak(resolution):
-    #path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
-    path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
+    #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
     r = load_reservoir_states(path)
-    res_states = r.T[:30].T[300:1100]
+    res_states = r.T[:150].T[450:1100]
     #res_states = np.array([res_states.T[953], res_states.T[1457], res_states.T[323], res_states.T[1251], res_states.T[267]]).T
     #res_states = np.array([res_states.T[81], res_states.T[1486], res_states.T[23], res_states.T[1201]]).T
-    positions = load_positions(path)[300:1100]
+    positions = load_positions(path)[450:1100]
     nb_neurons = len(res_states[0])
     explo_map = exploratory_map(resolution, positions)
     
@@ -148,7 +148,7 @@ def place_cells_detection_peak(resolution):
         return peaks
     
     # Computing the 99-percentile for each set of activities
-    nb_shuffle = 1000
+    nb_shuffle = 500
 
     peaks = np.array([np.concatenate((np.array([true_peaks[i]]), random_peaks(res_states.T[i], nb_shuffle))) for i in range(nb_neurons)])
     percentiles = [np.percentile(peaks[i], 99) for i in range(nb_neurons)]
@@ -162,10 +162,10 @@ def place_cells_detection_peak(resolution):
 def place_cells_detection_stability(resolution):
     #path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
     path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
-    res_states = load_reservoir_states(path).T[:30].T[300:1100]
+    res_states = load_reservoir_states(path).T[:150].T[450:1100]
     #res_states = np.array([res_states.T[953], res_states.T[1457], res_states.T[323], res_states.T[267], res_states.T[1251]]).T
     ##res_states = np.array([res_states.T[81], res_states.T[1486], res_states.T[23], res_states.T[1201]]).T
-    positions = load_positions(path)[300:1100]
+    positions = load_positions(path)[450:1100]
     nb_neurons = len(res_states[0])
 
     # Defining halves of the trajectory
@@ -202,13 +202,13 @@ def place_cells_detection_stability(resolution):
 
 # Radius defines the size of a place field
 def place_cells_filter_specificity(resolution, radius):
-    #path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
-    path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
-    r = load_reservoir_states(path)[450:1100]
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
+    #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+    r = load_reservoir_states(path)[450:2500]
     res_states = r
     #res_states = np.array([res_states.T[953], res_states.T[1457], res_states.T[323], res_states.T[1251], res_states.T[267]]).T
     #res_states = np.array([res_states.T[81], res_states.T[1486], res_states.T[23], res_states.T[1201]]).T
-    positions = load_positions(path)[450:1100]
+    positions = load_positions(path)[450:2500]
     nb_neurons = len(res_states[0])
     explo_map = exploratory_map(resolution, positions)
 
@@ -216,15 +216,15 @@ def place_cells_filter_specificity(resolution, radius):
         pos = np.argmax(act_map)
         pos_max = [floor(pos/len(act_map[0])), pos%len(act_map[0])]
         map_field = np.zeros(resolution)
-        map_comp = np.zeros((resolution))
+        #map_comp = np.zeros((resolution))
         for i in range(resolution[0]):
             for j in range(resolution[1]):
                 # In the place field
                 if (pos_max[0]-radius <= i <= pos_max[0]+radius) and (pos_max[1]-radius <= j <= pos_max[1]+radius):
                     map_field[i,j] = act_map[i,j]
                 # Outside
-                else:
-                    map_comp[i,j] = act_map[i,j]
+                #else:
+                    #map_comp[i,j] = act_map[i,j]
         
         mf_non_zero = map_field[map_field != 0]
         mc_non_zero = act_map[act_map > 0]
@@ -246,7 +246,8 @@ def place_cells_filter_specificity(resolution, radius):
     
     delta_peaks = np.array([diff_mean(activity_maps[i], radius) for i in range(nb_neurons)])
 
-    is_place_cell = [delta_peaks[i,0] > 0.5 * delta_peaks[i,1] for i in range(nb_neurons)]
+    is_place_cell = [delta_peaks[i,0] > 0.8 * delta_peaks[i,1] for i in range(nb_neurons)]
+    #is_place_cell = [delta_peaks[i,0] > 0.4 and delta_peaks[i,1] <= 0 for i in range(nb_neurons)]
     place_cells = np.argwhere(is_place_cell)
     return place_cells
 
@@ -278,6 +279,7 @@ def place_cells_stability_filter(resolution):
         activities = [[x for x in activities[i] if x==x] for i in range(len(activities))]
         return activities
     
+    # Mean for inhomogeneous tabs
     def mean(tab):
         val = 0
         nb_elem = 0
@@ -296,25 +298,15 @@ def place_cells_stability_filter(resolution):
 #exploratory_map((6,10))
 #print(walls_collision_percentage())
 #show_place_fields((6,10))
+
 #place_cells_peak = place_cells_detection_peak((12,20))
 #print(place_cells_peak)
-#place_cells_stab = place_cells_detection_stability((6,10))
+
+#place_cells_stab = place_cells_detection_stability((12,20))
 #print(place_cells_stab)
-#print(np.intersect1d(place_cells_peak, place_cells_stab))
 
-
-place_cells_spec_fliltered = place_cells_filter_specificity((36,60), 3)
+place_cells_spec_fliltered = place_cells_filter_specificity((36,60), 2)
 print(place_cells_spec_fliltered)
+
 #pc_stab_fil = place_cells_stability_filter((36,60))
 #print(pc_stab_fil)
-#print(np.intersect1d(place_cells_spec_fliltered, pc_stab_fil))
-
-#path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
-'''path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
-res_states = load_reservoir_states(path)[:1100]
-positions = load_positions(path)[:1100]
-em = exploratory_map((12,20),positions)
-plot_activity_map(res_states.T[rd.randint(0,999)], positions, em, (12,20))'''
-
-#plt.imshow(maps[0].T, cmap='inferno', origin='lower')
-#plt.show()

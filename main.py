@@ -27,12 +27,12 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'random_walls' # 'maze', 'maze_four', 'random_walls', 'maze_other'
+maze = 'maze_other' # 'maze', 'maze_four', 'random_walls', 'maze_other'
 task = 'wander' #'RR-LL', 'R-L', 'wander'
-simulation_mode = 'esn'  # 'data', 'walls', 'esn'
+simulation_mode = 'walls'  # 'data', 'walls', 'esn'
 cues = False
 save_reservoir_states = False
-save_bot_states = False
+save_bot_states = True
 path_to_save = './trials/states/'
 
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
     # Set up the animation
     anim = animation.FuncAnimation(exp.simulation_visualizer.fig, exp.run,
-                                   frames=10000, interval=1, repeat=False)
+                                   frames=50000, interval=1, repeat=False)
     plt.tight_layout()
     plt.show()
 

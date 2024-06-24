@@ -11,7 +11,7 @@ class Bot:
         #self.position = 200, 25
         #self.orientation = 60
         self.position = 150,300
-        self.orientation = 3
+        self.orientation = 2
         self.n_sensors = 8
 
         # Direction flag
