@@ -600,12 +600,13 @@ def plot_hippocampal_cells(neurons):
         return scat
     
     fig, axes = plt.subplots(1, len(neurons), figsize=(12, 4))  # Increased figure width
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
+    #path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
     positions = load_positions(path)
     res_activity = load_reservoir_states(path)
 
-    start_path = 0
-    end_path = len(positions)
+    start_path = 450
+    end_path = 1100
 
     for ax, neuron in zip(axes, neurons):
         plot_place_cells(ax=ax, place_cells=neuron, line=2,
@@ -712,11 +713,10 @@ def plot_head_direction_cells():
 
     res_activity = np.transpose(res_activity)
     corr_array = []
-    for i in range(len(res_activity)):
-        res = res_activity[i]
+    for res in iter(res_activity):
         corr_array.append(np.corrcoef(res, np.squeeze(orientations))[0][1])
     indexes = np.argsort(corr_array)
-    most_correlated = [indexes[-1]]
+    most_correlated = [indexes[0]]
 
     inverted_res_activity = np.mean(res_activity) - res_activity
 
@@ -734,7 +734,7 @@ def plot_head_direction_cells():
     ax2.set_ylabel('Most correlated cell : coef =' + str(coef), color=color)
 
     for neuron in most_correlated:
-        ax2.plot(res_activity[neuron] - np.mean(res_activity[neuron]), color=color, linewidth=0.5, alpha=1)
+        ax2.plot(np.mean(res_activity[neuron]) - res_activity[neuron], color=color, linewidth=0.5, alpha=1)
 
     ax2.tick_params(axis='y', labelcolor=color)
 
@@ -934,12 +934,11 @@ def plot_RSA_matrix(cues=False):
 
 
 from random import seed, sample
-#seed(2)
 if __name__ == '__main__':
     #raster_plot() # Specific to the loop
     #plot_head_direction_cells()
-    #plot_hippocampal_cells([1201,1486,23,81])
-    plot_hippocampal_cells([1486,267,81])
+    plot_hippocampal_cells([254,473])
+    #plot_hippocampal_cells([0,7,21])
     #plot_hippocampal_cells_3() # Loop, corner and place cells
     #plot_splitter_cells_count()
     #plot_splitter_cells_during_error_trial()
