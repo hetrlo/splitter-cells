@@ -57,9 +57,9 @@ class Experiment:
         elif self.simulation_mode == 'esn':
             self.model = Model(model_file=self.model_file, data_folder=self.data_folder,
                                save_reservoir_states=self.save_reservoir_states)
-            #self.bot.position = self.model.positions[self.model.nb_train-1]
+            self.bot.position = self.model.positions[self.model.nb_train-1]
             # To choose where the bot starts after training
-            self.bot.position = [150,250]
+            #self.bot.position = [150,250]
         self.maze.draw(self.simulation_visualizer.ax, grid=True, margin=15)
         self.bot.draw(self.simulation_visualizer.ax)
 

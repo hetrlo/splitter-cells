@@ -104,15 +104,14 @@ def objective(trial: optuna.trial.Trial,X_train, Y_train, X_test, Y_test,agent_d
 
 def optuna_optim(input,output, title,n_trials = 500):
     print('Start Optuna optimization ...')
-    parent_dir = 'model_optimization/'
+    parent_dir = '/trials/optimization_maze_other/'
     SAVED_AGENTS_DIR = parent_dir + 'mlagent/' + title
     MLFLOW_RUNS_DIR = parent_dir + 'mlflows/' + title
     mlflow.set_tracking_uri(MLFLOW_RUNS_DIR)
     mlflow.set_experiment(title)
     study = optuna.create_study(sampler=optuna.samplers.TPESampler(), study_name=title,
                                 direction='minimize',
-                                load_if_exists=True, storage=f'sqlite:////Users/nchaix/Documents/PhD/code/'
-                                                             f'splitter_cells/model_optimization/optuna_db/'
+                                load_if_exists=True, storage=f'sqlite:///trials/optimization_maze_other/'
                                                              + title + '.db')
     X_train, Y_train, X_test, Y_test = split_train_test(input, output, 7000)
     func = lambda trial: objective(trial,  X_train, Y_train, X_test, Y_test, agent_dir=SAVED_AGENTS_DIR)
@@ -121,13 +120,13 @@ def optuna_optim(input,output, title,n_trials = 500):
     hparams = {k: best_trial.params[k] for k in best_trial.params if k != 'seed'}
 
 
-data_folder = "data/R-L/no_cues/"
+data_folder = "trials/training_maze_other/"
 
 input = np.load(data_folder + 'input.npy')
 output = np.load(data_folder + 'output.npy')
 output = output.reshape(len(output), 1)
 
-title = 'RL_no_cues_2'
+title = 'maze_other'
 optuna_optim(input, output, title, n_trials=700)
 
 
