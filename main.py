@@ -31,9 +31,9 @@ maze = 'maze_other' # 'maze', 'maze_four', 'random_walls', 'maze_other'
 task = 'wander' #'RR-LL', 'R-L', 'wander'
 simulation_mode = 'esn'  # 'data', 'walls', 'esn'
 cues = False
-save_reservoir_states = False
-save_bot_states = False
-path_to_save = './trials/states/maze_other'
+save_reservoir_states = True
+save_bot_states = True
+path_to_save = './trials/maze_other'
 
 
 if __name__ == '__main__':

@@ -202,13 +202,13 @@ def place_cells_detection_stability(resolution):
 
 # Radius defines the size of a place field
 def place_cells_filter_specificity(resolution, radius):
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/maze_other/"
     #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
-    r = load_reservoir_states(path)[450:2500]
+    r = load_reservoir_states(path)[:]
     res_states = r
     #res_states = np.array([res_states.T[953], res_states.T[1457], res_states.T[323], res_states.T[1251], res_states.T[267]]).T
     #res_states = np.array([res_states.T[81], res_states.T[1486], res_states.T[23], res_states.T[1201]]).T
-    positions = load_positions(path)[450:2500]
+    positions = load_positions(path)[:]
     nb_neurons = len(res_states[0])
     explo_map = exploratory_map(resolution, positions)
 
