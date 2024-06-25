@@ -155,17 +155,18 @@ def place_cells_detection_peak(resolution):
 
     is_place_cell = [peaks[i,0] >= percentiles[i] for i in range(nb_neurons)]
     place_cells = np.argwhere(is_place_cell)
-    return place_cells
+    return place_cells.ravel()
 
 #########################################################################################################################################
 
 def place_cells_detection_stability(resolution):
     #path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
-    path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
-    res_states = load_reservoir_states(path).T[:150].T[450:1100]
+    #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/maze_other/"
+    res_states = load_reservoir_states(path).T[:150].T
     #res_states = np.array([res_states.T[953], res_states.T[1457], res_states.T[323], res_states.T[267], res_states.T[1251]]).T
     ##res_states = np.array([res_states.T[81], res_states.T[1486], res_states.T[23], res_states.T[1201]]).T
-    positions = load_positions(path)[450:1100]
+    positions = load_positions(path)
     nb_neurons = len(res_states[0])
 
     # Defining halves of the trajectory
@@ -196,7 +197,7 @@ def place_cells_detection_stability(resolution):
 
     is_place_cell = [coefs[i,0] >= percentiles[i] for i in range(nb_neurons)]
     place_cells = np.argwhere(is_place_cell)
-    return place_cells
+    return place_cells.ravel()
 
 #############################################################################################################################################
 
@@ -204,11 +205,11 @@ def place_cells_detection_stability(resolution):
 def place_cells_filter_specificity(resolution, radius):
     path = "/home/heloise/Mnémosyne/splitter-cells/trials/maze_other/"
     #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
-    r = load_reservoir_states(path)[:]
+    r = load_reservoir_states(path)[:2000]
     res_states = r
     #res_states = np.array([res_states.T[953], res_states.T[1457], res_states.T[323], res_states.T[1251], res_states.T[267]]).T
     #res_states = np.array([res_states.T[81], res_states.T[1486], res_states.T[23], res_states.T[1201]]).T
-    positions = load_positions(path)[:]
+    positions = load_positions(path)[:2000]
     nb_neurons = len(res_states[0])
     explo_map = exploratory_map(resolution, positions)
 
@@ -246,16 +247,17 @@ def place_cells_filter_specificity(resolution, radius):
     
     delta_peaks = np.array([diff_mean(activity_maps[i], radius) for i in range(nb_neurons)])
 
-    is_place_cell = [delta_peaks[i,0] > 0.8 * delta_peaks[i,1] for i in range(nb_neurons)]
+    is_place_cell = [delta_peaks[i,0] > 0.5 * delta_peaks[i,1] for i in range(nb_neurons)]
     #is_place_cell = [delta_peaks[i,0] > 0.4 and delta_peaks[i,1] <= 0 for i in range(nb_neurons)]
     place_cells = np.argwhere(is_place_cell)
-    return place_cells
+    return place_cells.ravel()
 
 #################################################################################################################################
 
 def place_cells_stability_filter(resolution):
     #path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
-    path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+    #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/trained_maze_other__new_maze/"
     r = load_reservoir_states(path)
     res_states = r[450:1500]
     #res_states = np.array([res_states.T[953], res_states.T[1457], res_states.T[323], res_states.T[1251], res_states.T[267]]).T
@@ -293,7 +295,7 @@ def place_cells_stability_filter(resolution):
     percentile = np.percentile(sum_variances, 99)
     is_place_cell = [sum_variances[i] >= percentile for i in range(nb_neurons)]
     place_cells = np.argwhere(is_place_cell)
-    return place_cells
+    return place_cells.ravel()
 
 #exploratory_map((6,10))
 #print(walls_collision_percentage())

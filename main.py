@@ -33,7 +33,7 @@ simulation_mode = 'esn'  # 'data', 'walls', 'esn'
 cues = False
 save_reservoir_states = True
 save_bot_states = True
-path_to_save = './trials/maze_other'
+path_to_save = './trials/trained_maze_other__new_maze/'
 
 
 if __name__ == '__main__':
@@ -56,7 +56,7 @@ if __name__ == '__main__':
             data_folder = "data/RR-LL/no_cues/error_case/"
     if maze == 'random_walls':
         print("Run the wander around and find out task :)")
-        model_file = "trials/training_random_walls/model_settings_wander_first_attempt.json"
+        model_file = "trials/training_random_walls/model_settings_wander.json"
         data_folder = "trials/training_random_walls/"
     elif maze == 'maze_other':
         print("Wandering around in the 'maze_other' maze")

@@ -601,12 +601,12 @@ def plot_hippocampal_cells(neurons):
     
     fig, axes = plt.subplots(1, len(neurons), figsize=(12, 4))  # Increased figure width
     #path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/maze_other/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/trained_maze_other__new_maze/"
     positions = load_positions(path)
     res_activity = load_reservoir_states(path)
 
-    start_path = 45000
-    end_path = 46000
+    start_path = 0
+    end_path = len(positions)
 
     for ax, neuron in zip(axes, neurons):
         plot_place_cells(ax=ax, place_cells=neuron, line=2,
