@@ -27,13 +27,13 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'maze_other' # 'maze', 'maze_four', 'random_walls', 'maze_other'
+maze = 'random_walls' # 'maze', 'maze_four', 'random_walls', 'maze_other'
 task = 'wander' #'RR-LL', 'R-L', 'wander'
 simulation_mode = 'esn'  # 'data', 'walls', 'esn'
 cues = False
-save_reservoir_states = True
-save_bot_states = True
-path_to_save = './trials/trained_maze_other__new_maze/'
+save_reservoir_states = False
+save_bot_states = False
+path_to_save = './trials/training_random_walls/second_attempt/'
 
 
 if __name__ == '__main__':
@@ -56,8 +56,8 @@ if __name__ == '__main__':
             data_folder = "data/RR-LL/no_cues/error_case/"
     if maze == 'random_walls':
         print("Run the wander around and find out task :)")
-        model_file = "trials/training_random_walls/model_settings_wander.json"
-        data_folder = "trials/training_random_walls/"
+        model_file = "trials/training_random_walls/second_attempt/model_settings_wander.json"
+        data_folder = "trials/training_random_walls/second_attempt/"
     elif maze == 'maze_other':
         print("Wandering around in the 'maze_other' maze")
         model_file = "trials/training_maze_other/model_settings_maze_other.json"

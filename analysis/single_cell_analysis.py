@@ -61,6 +61,7 @@ def load_orientations(path):
     return np.load(path + 'output.npy')
 
 
+# Trying to fit an esn to compute position from the activity
 def position_from_activity(): # A opti, très clairement.
     path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
     positions = load_positions(path)

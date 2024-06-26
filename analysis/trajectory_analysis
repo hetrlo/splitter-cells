@@ -7,8 +7,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random as rd
 from scipy.stats import pearsonr
+from scipy.ndimage import median_filter
 from math import *
 
+# Functions to load data
 def load_positions(path):
     return np.load(path + 'positions.npy')
 
@@ -55,7 +57,7 @@ def walls_collision_percentage():
     nb_collisions = np.count_nonzero(collision)
     return (nb_collisions / len_record) * 100
 
-# Returns the amount of times the bot encountered each position
+# Returns an array with the amount of times the bot entered each bin
 def exploratory_map(resolution, positions):
     movement_repartition = np.zeros(resolution)
 
@@ -72,7 +74,7 @@ def plot_map(explo_map):
     plt.imshow(explo_map.T, cmap='inferno', origin='lower')
     plt.show()
 
-# Map for one neuron
+# Average activity in each bin for one neuron
 def activity_map(neuron_activity, positions, explo_map, resolution):
     map = np.zeros(resolution)
     for i,pos in enumerate(positions):
@@ -91,7 +93,7 @@ def plot_activity_map(neuron, positions, explo_map, resolution):
     plt.imshow(map.T, cmap = 'gray', origin='lower')
     plt.show()
 
-# Maps the mean neurons activity across the maze (to reveal place cells)
+# Maps the mean neurons activity across the maze (to reveal potential bias)
 def show_place_fields(resolution):
     path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
     res_states = load_reservoir_states(path)
@@ -134,7 +136,7 @@ def place_cells_detection_peak(resolution):
     nb_neurons = len(res_states[0])
     explo_map = exploratory_map(resolution, positions)
     
-    # Actual peak for each neuron
+    # Computing the actual peak for each neuron
     true_peaks = np.array([np.max(np.abs(activity_map(res_states.T[i], positions, explo_map, resolution))) for i in range(nb_neurons)])
 
     # Computing random peaks by shuffling the activity nb_shuffle times for a neuron
@@ -147,18 +149,20 @@ def place_cells_detection_peak(resolution):
             peaks[n] = np.max(np.abs(activity_map(rd_activity, positions, explo_map, resolution)))
         return peaks
     
-    # Computing the 99-percentile for each set of activities
+    # Computing the 99-percentile for each set of peaks
     nb_shuffle = 500
 
     peaks = np.array([np.concatenate((np.array([true_peaks[i]]), random_peaks(res_states.T[i], nb_shuffle))) for i in range(nb_neurons)])
     percentiles = [np.percentile(peaks[i], 99) for i in range(nb_neurons)]
 
+    # Only keeping cells with a true peak over the 99-percentile of its peak set
     is_place_cell = [peaks[i,0] >= percentiles[i] for i in range(nb_neurons)]
     place_cells = np.argwhere(is_place_cell)
     return place_cells.ravel()
 
 #########################################################################################################################################
 
+# Detecting place cells using stability method
 def place_cells_detection_stability(resolution):
     #path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
     #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
@@ -172,14 +176,14 @@ def place_cells_detection_stability(resolution):
     # Defining halves of the trajectory
     positions_1, positions_2 = positions[:floor(len(positions)/2)], positions[floor(len(positions)/2):]
     res_states_1, res_states_2 = res_states[:floor(len(positions)/2)], res_states[floor(len(positions)/2):]
-
+    # ... And their corresponding exploratory maps
     explo_map_1, explo_map_2 = exploratory_map(resolution, positions_1), exploratory_map(resolution, positions_2)
     
-    # Actual maps
+    # Actual activity maps for each neuron
     maps_1 = np.array([activity_map(state, positions_1, explo_map_1, resolution) for state in res_states_1.T])
     maps_2 = np.array([activity_map(state, positions_2, explo_map_2, resolution) for state in res_states_2.T])
 
-    # Actual Pearson correlation coefficient between maps values
+    # Actual Pearson correlation coefficient between first section and second section maps
     true_coefs = np.array([pearsonr(maps_1[i].ravel(),maps_2[i].ravel()).statistic for i in range(nb_neurons)])
 
     # Computing coefficients for random maps by shuffling the activity nb_shuffle times for each neuron
@@ -297,6 +301,23 @@ def place_cells_stability_filter(resolution):
     place_cells = np.argwhere(is_place_cell)
     return place_cells.ravel()
 
+from scipy.interpolate import UnivariateSpline
+def plot_derivate_activity():
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/random_walls/reservoir_states/"
+    state = load_reservoir_states(path).T[0].T[:]
+    # Using the derivative
+    x = np.linspace(0, len(state), len(state))
+    der = np.diff(state) / np.diff(x)
+    #plt.plot(x[1:], der)
+    # Using a median filter
+    smooth = median_filter(state, size=20)
+    abs_diff = np.abs(state-smooth)
+    abs_filt = np.array([abs > np.percentile(abs_diff, 90) for abs in abs_diff])
+    abs_diff = abs_diff * abs_filt
+    plt.plot(x, abs_diff)
+    plt.show()
+    
+
 #exploratory_map((6,10))
 #print(walls_collision_percentage())
 #show_place_fields((6,10))
@@ -307,8 +328,10 @@ def place_cells_stability_filter(resolution):
 #place_cells_stab = place_cells_detection_stability((12,20))
 #print(place_cells_stab)
 
-place_cells_spec_fliltered = place_cells_filter_specificity((36,60), 2)
-print(place_cells_spec_fliltered)
+#place_cells_spec_fliltered = place_cells_filter_specificity((36,60), 2)
+#print(place_cells_spec_fliltered)
 
 #pc_stab_fil = place_cells_stability_filter((36,60))
 #print(pc_stab_fil)
+
+plot_derivate_activity()
