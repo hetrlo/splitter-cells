@@ -3,6 +3,7 @@ from bot import Bot
 from simulation_visualizer import SimulationVisualizer
 import numpy as np
 from esn_model import Model
+from neuron_pool import Pool
 
 """
 - automatic navigation with walls (braitenberg+walls) 'walls_directed'
@@ -60,6 +61,11 @@ class Experiment:
             self.bot.position = self.model.positions[self.model.nb_train-1]
             # To choose where the bot starts after training
             #self.bot.position = [150,250]
+
+        elif self.simulation_mode == 'mix':
+            self.pool = Pool(model_file=self.model_file,
+                               save_reservoir_states=self.save_reservoir_states)
+
         self.maze.draw(self.simulation_visualizer.ax, grid=True, margin=15)
         self.bot.draw(self.simulation_visualizer.ax)
 
@@ -76,7 +82,7 @@ class Experiment:
             else:
                 cues = None
 
-            if self.simulation_mode == 'walls':
+            if self.simulation_mode == 'walls' or self.simulation_mode == 'mix':
                 self.bot.update_position(self.maze)
                 self.bot.compute_orientation()
                 if self.task == 'R-L':
@@ -85,11 +91,14 @@ class Experiment:
                     self.maze.update_walls_RR_LL(self.bot.position)
                 elif self.task == 'wander':
                     pass
+                if self.simulation_mode=='mix':
+                    self.pool.process(self.bot.sensors, cues)
+
             elif self.simulation_mode == 'esn':
                 #if self.task == "wander":
                 #    self.maze.update_walls(self.bot.position)
                 self.bot.update_position(self.maze)
-                self.bot.orientation = self.model.process(self.bot.sensors, cues)
+                self.bot.orientation = self.model.process(self.bot.sensors, cues)                
 
             self.bot.update(self.maze, cues=self.cues)
 

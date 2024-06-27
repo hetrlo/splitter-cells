@@ -700,6 +700,16 @@ def plot_hippocampal_cells_3():
     plt.subplots_adjust(right=0.85)
     plt.show()
 
+from scipy.ndimage import median_filter
+def plot_head_direction():
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/random_walls/second_attempt/"
+    orientations = load_orientations(path)
+    time = np.linspace(0, len(orientations), len(orientations))
+    deviation = np.diff(orientations) / np.diff(time)
+    smooth_dev = median_filter(deviation, size=200)
+    #plt.plot(time[1:], orientations[1:], color = 'green', linewidth=5, alpha=0.5)
+    plt.plot(time[1:], deviation, color='red', linewidth=5, alpha=1)
+    plt.show()
 
 def plot_head_direction_cells():
     """This function visualizes the activity of head direction cells by correlating
@@ -708,14 +718,16 @@ def plot_head_direction_cells():
         Returns:
         None
         """
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/maze_other/"
-    res_activity = load_reservoir_states(path)[:10000]
-    orientations = load_orientations(path)[:10000]
-
+    #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/random_walls/second_attempt/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/"
+    res_activity = load_reservoir_states(path)
+    orientations = load_orientations(path)
+    
     res_activity = np.transpose(res_activity)
     corr_array = []
     for res in iter(res_activity):
-        corr_array.append(np.corrcoef(res, np.squeeze(orientations))[0][1])
+        corr_array.append(np.corrcoef(res, orientations)[0][1])
     indexes = np.argsort(corr_array)
     most_correlated = [indexes[-1]]
 
@@ -724,6 +736,9 @@ def plot_head_direction_cells():
     fig, ax1 = plt.subplots(figsize=(12, 5))
     ax1.set_xlabel('time (s)')
     ax1.set_ylabel('Orientation', color='orange')
+    time = np.linspace(0, len(orientations), len(orientations))
+    deviation = np.diff(orientations) / np.diff(time)
+    smooth_dev = median_filter(deviation, size=200)
     ax1.plot(orientations, color='orange', markersize=20, linewidth=7, alpha=0.5)
     ax1.tick_params(axis='y', labelcolor='orange')
 
@@ -735,7 +750,10 @@ def plot_head_direction_cells():
     ax2.set_ylabel('Most correlated cell : coef =' + str(coef), color=color)
 
     for neuron in most_correlated:
-        ax2.plot(res_activity[neuron] - np.mean(res_activity[neuron]), color=color, linewidth=0.5, alpha=1)
+        act = res_activity[neuron] - np.mean(res_activity[neuron])
+        dev = np.diff(act) / np.diff(time)
+        smooth = median_filter(dev, size=100)
+        ax2.plot(act, color=color, linewidth=0.5, alpha=1)
 
     ax2.tick_params(axis='y', labelcolor=color)
 
@@ -937,8 +955,8 @@ def plot_RSA_matrix(cues=False):
 from random import seed, sample
 if __name__ == '__main__':
     #raster_plot() # Specific to the loop
-    #plot_head_direction_cells()
-    plot_hippocampal_cells(sample(range(0,999), 5))
+    plot_head_direction_cells()
+    #plot_hippocampal_cells(sample(range(0,999), 5))
     #plot_hippocampal_cells([0,7,21])
     #plot_hippocampal_cells_3() # Loop, corner and place cells
     #plot_splitter_cells_count()

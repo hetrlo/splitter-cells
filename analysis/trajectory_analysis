@@ -90,7 +90,7 @@ def activity_map(neuron_activity, positions, explo_map, resolution):
 
 def plot_activity_map(neuron, positions, explo_map, resolution):
     map = activity_map(neuron, positions, explo_map, resolution)
-    plt.imshow(map.T, cmap = 'gray', origin='lower')
+    plt.imshow(map.T, cmap = 'inferno', origin='lower')
     plt.show()
 
 # Maps the mean neurons activity across the maze (to reveal potential bias)
@@ -316,7 +316,7 @@ def plot_derivate_activity():
     abs_diff = abs_diff * abs_filt
     plt.plot(x, abs_diff)
     plt.show()
-    
+
 
 #exploratory_map((6,10))
 #print(walls_collision_percentage())
@@ -328,10 +328,14 @@ def plot_derivate_activity():
 #place_cells_stab = place_cells_detection_stability((12,20))
 #print(place_cells_stab)
 
+path = "/home/heloise/Mnémosyne/splitter-cells/trials/random_walls/reservoir_states/"
+state = load_reservoir_states(path).T[139].T[:]
+plot_activity_map(state, load_positions(path), exploratory_map((36,60), load_positions(path)), (36,60))
+
 #place_cells_spec_fliltered = place_cells_filter_specificity((36,60), 2)
 #print(place_cells_spec_fliltered)
 
 #pc_stab_fil = place_cells_stability_filter((36,60))
 #print(pc_stab_fil)
 
-plot_derivate_activity()
+#plot_derivate_activity()

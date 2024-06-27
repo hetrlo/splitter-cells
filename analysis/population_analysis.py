@@ -497,8 +497,8 @@ if __name__ == '__main__':
     #plot_PCA_3D()
     #plot_PCA_3D_with_distance()
     #plot_SVM_predictions()
-    #plot_UMAP(cues=False, n_neighbors=5)
-    plot_UMAP_error_case()
+    plot_UMAP(cues=False, n_neighbors=5)
+    #plot_UMAP_error_case()
 
 
 

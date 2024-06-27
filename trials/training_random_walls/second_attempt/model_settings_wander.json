@@ -9,5 +9,5 @@
 "connectivity": 0.1245,
 "noise_rc": 0,
 "warmup": 1000,
-"nb_train": 20000
+"nb_train": 18000
 }

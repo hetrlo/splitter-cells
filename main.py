@@ -11,7 +11,7 @@ Before running the script, certain configurations are required:
                    Some walls are added so as to force the bot taking the right direction
                 2) 'data': the bot is data-driven and navigates based on the provided position file.
                 3) 'esn': the bot moves based on ESN predictions, trained using supervised learning.
-
+                4) 'mix': the bot moves using Braitenberg algorithm, but a pool of neurons reflects the sensors values
 - save_reservoir_states: set to True if the reservoir states and the bot's positions and orientation need to be recorded
 - save_bot_states: set to True if the bot's positions and orientation need to be recorded. Orientation contains the 
                    orientation of the bot, output its position, and input is a concatenation of cues (if there are) and
@@ -29,11 +29,11 @@ import numpy as np
 
 maze = 'random_walls' # 'maze', 'maze_four', 'random_walls', 'maze_other'
 task = 'wander' #'RR-LL', 'R-L', 'wander'
-simulation_mode = 'esn'  # 'data', 'walls', 'esn'
+simulation_mode = 'mix'  # 'data', 'walls', 'esn', 'mix'
 cues = False
-save_reservoir_states = False
-save_bot_states = False
-path_to_save = './trials/training_random_walls/second_attempt/'
+save_reservoir_states = True
+save_bot_states = True
+path_to_save = './trials/'
 
 
 if __name__ == '__main__':
@@ -54,14 +54,21 @@ if __name__ == '__main__':
             model_file = "model_settings/model_RR-LL_no_cues.json"
             data_folder = "data/RR-LL/no_cues/"
             data_folder = "data/RR-LL/no_cues/error_case/"
-    if maze == 'random_walls':
-        print("Run the wander around and find out task :)")
-        model_file = "trials/training_random_walls/second_attempt/model_settings_wander.json"
-        data_folder = "trials/training_random_walls/second_attempt/"
-    elif maze == 'maze_other':
-        print("Wandering around in the 'maze_other' maze")
-        model_file = "trials/training_maze_other/model_settings_maze_other.json"
-        data_folder = "trials/training_maze_other/"
+    elif task == 'wander':
+        if maze == 'random_walls':
+            print("Run the wander around and find out task :)")
+
+            if simulation_mode == 'esn':
+                model_file = "trials/training_random_walls/second_attempt/model_settings_wander.json"
+            elif simulation_mode == 'mix':
+                model_file = "trials/mix/reservoir_settings.json"
+
+            data_folder = "trials/training_random_walls/second_attempt/"
+        elif maze == 'maze_other':
+            print("Wandering around in the 'maze_other' maze")
+            model_file = "trials/training_maze_other/model_settings_maze_other.json"
+            data_folder = "trials/training_maze_other/"
+    
 
     else:
         raise Exception("Task name {}".format(task) + " is not recognized.")
@@ -90,6 +97,10 @@ if __name__ == '__main__':
             np.save(path_to_save + 'input.npy', exp.bot.all_sensors_vals)
 
     if save_reservoir_states:
-        np.save(path_to_save + 'reservoir_states.npy', exp.model.reservoir_states)
+        if simulation_mode == 'esn':
+            np.save(path_to_save + 'reservoir_states.npy', exp.model.reservoir_states)
+        elif simulation_mode == 'mix':
+                np.save(path_to_save + 'reservoir_states.npy', exp.pool.reservoir_states)
+
 
 
