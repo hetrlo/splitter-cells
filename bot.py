@@ -1,18 +1,21 @@
 import numpy as np
+import random as rd
+rd.seed(1)
 from matplotlib.collections import LineCollection
 from matplotlib.patches import Circle
 from maze import line_intersect
 
 class Bot:
 
-    def __init__(self, save_bot_sates, sensor_size):
+    def __init__(self, noise, save_bot_sates, sensor_size):
         self.size = 10
         # if maze == random_walls
         #self.position = 200, 25
         #self.orientation = 60
-        self.position = 150,300
-        self.orientation = 2
+        self.position = 150,250
+        self.orientation = 0
         self.n_sensors = 8
+        self.noisy = noise
 
         # Direction flag
         self.left_cue = True  # start by going left
@@ -132,6 +135,8 @@ class Bot:
         dv = (self.sensors["value"].ravel() * [-4, -3, -2, -1, 1, 2, 3, 4]).sum()
         if abs(dv) > 0.01:  # if 75 sensor size
             self.orientation += 0.015 * dv
+            if self.noisy:
+                self.orientation += rd.choice([0 for i in range(25)] + [rd.uniform(-1, 1)])
 
     def update_position(self, maze):
         """Updates the position of the bot according to the calculated orientation."""

@@ -69,7 +69,7 @@ class Maze:
             [(200, 300), (300, 250)]
         ])
 
-        if simulation_mode == "walls":
+        if simulation_mode == "walls" or simulation_mode == "mix":
             self.invisible_walls = True
         else:
             self.invisible_walls = False

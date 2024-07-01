@@ -21,7 +21,7 @@ class Experiment:
     """
     This class runs the experiment.
     """
-    def __init__(self, model_file, data_folder, simulation_mode, maze, task, cues, save_reservoir_states, save_bot_states):
+    def __init__(self, model_file, data_folder, simulation_mode, maze, task, cues, noise, save_reservoir_states, save_bot_states):
 
         self.task = task
         self.simulation_mode = simulation_mode
@@ -35,7 +35,7 @@ class Experiment:
         elif task == "wander":
             sensor_size = 80
 
-        self.bot = Bot(save_bot_states, sensor_size=sensor_size)
+        self.bot = Bot(noise, save_bot_states, sensor_size=sensor_size)
         # Init of the maze
         if maze == 'maze':
             self.maze = Maze(simulation_mode=simulation_mode)
@@ -91,7 +91,7 @@ class Experiment:
                     self.maze.update_walls_RR_LL(self.bot.position)
                 elif self.task == 'wander':
                     pass
-                if self.simulation_mode=='mix':
+                if self.simulation_mode =='mix':
                     self.pool.process(self.bot.sensors, cues)
 
             elif self.simulation_mode == 'esn':

@@ -27,13 +27,14 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'random_walls' # 'maze', 'maze_four', 'random_walls', 'maze_other'
+maze = 'maze_other' # 'maze', 'maze_four', 'random_walls', 'maze_other'
 task = 'wander' #'RR-LL', 'R-L', 'wander'
 simulation_mode = 'mix'  # 'data', 'walls', 'esn', 'mix'
 cues = False
-save_reservoir_states = True
-save_bot_states = True
-path_to_save = './trials/'
+noise = True # adds noise in walls and mix mode
+save_reservoir_states = False
+save_bot_states = False
+path_to_save = './trials/mix/maze_other_noisy/'
 
 
 if __name__ == '__main__':
@@ -53,7 +54,7 @@ if __name__ == '__main__':
         else:
             model_file = "model_settings/model_RR-LL_no_cues.json"
             data_folder = "data/RR-LL/no_cues/"
-            data_folder = "data/RR-LL/no_cues/error_case/"
+            # data_folder = "data/RR-LL/no_cues/error_case/"
     elif task == 'wander':
         if maze == 'random_walls':
             print("Run the wander around and find out task :)")
@@ -66,7 +67,11 @@ if __name__ == '__main__':
             data_folder = "trials/training_random_walls/second_attempt/"
         elif maze == 'maze_other':
             print("Wandering around in the 'maze_other' maze")
-            model_file = "trials/training_maze_other/model_settings_maze_other.json"
+
+            if simulation_mode == 'esn':
+                model_file = "trials/training_maze_other/model_settings_maze_other.json"
+            elif simulation_mode == 'mix' or simulation_mode == 'walls':
+                model_file = "trials/mix/reservoir_settings.json"
             data_folder = "trials/training_maze_other/"
     
 
@@ -74,7 +79,7 @@ if __name__ == '__main__':
         raise Exception("Task name {}".format(task) + " is not recognized.")
 
     # Set up the experiment
-    exp = Experiment(model_file, data_folder, simulation_mode, maze, task, cues,
+    exp = Experiment(model_file, data_folder, simulation_mode, maze, task, cues, noise, 
                      save_reservoir_states=save_reservoir_states,
                      save_bot_states=save_bot_states)
 

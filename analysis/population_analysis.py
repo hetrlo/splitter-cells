@@ -311,7 +311,7 @@ def gather_reservoir_states_central_corridor(cues=False):
     if cues:
         path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/cues/reservoir_states/"
     else:
-        path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+        path = "/home/heloise/Mnémosyne/splitter-cells/trials/comparison_RR-LL/"
 
     reservoir_states = np.load(path + 'reservoir_states.npy')
     positions = np.load(path + 'positions.npy')
@@ -372,9 +372,9 @@ def gather_reservoir_states_central_corridor(cues=False):
     for trajectory in trajectories:
         for index in list_indexes[trajectory]:
             reservoir_states_corridor[trajectory].append(np.array(reservoir_states[index[0]: index[0] + 100][:]))
-    #np.save(arr=reservoir_states_corridor,
-    #        file= path + 'reservoir_states_corridor.npy',
-    #        allow_pickle=True)
+    np.save(arr=reservoir_states_corridor,
+            file= path + 'reservoir_states_corridor.npy',
+            allow_pickle=True)
     return reservoir_states_corridor
 
 
@@ -395,7 +395,8 @@ def plot_UMAP(cues=False, n_neighbors=5):
     if cues:
         path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/cues/reservoir_states/"
     else:
-        path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+        #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+        path = "/home/heloise/Mnémosyne/splitter-cells/trials/comparison_RR-LL/"
 
     # Load reservoir states
     reservoir_states = np.load(path + 'reservoir_states_corridor.npy', allow_pickle=True).item()
@@ -405,6 +406,7 @@ def plot_UMAP(cues=False, n_neighbors=5):
     n_LR = len(reservoir_states['LR'])
     n_RL = len(reservoir_states['RL'])
     n_RR = len(reservoir_states['RR'])
+    # Wtf pourquoi y'en a si peu ??
 
     # Concatenate all reservoir states
     all_states = np.concatenate((reservoir_states['RR'], reservoir_states['LR'],
@@ -428,6 +430,22 @@ def plot_UMAP(cues=False, n_neighbors=5):
     scatter = plt.scatter(embedding[:, 0], embedding[:, 1], c=values, cmap=colours, alpha=1, s=2)
     plt.legend(handles=scatter.legend_elements()[0], labels=labels)
     plt.title("UMAP of the bot's internal state in the central corridor")
+    plt.xlabel("UMAP Dimension 1")
+    plt.ylabel("UMAP Dimension 2")
+    plt.show()
+
+def plot_UMAP_general(cues=False, n_neighbors=5):
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/comparison_RR-LL/"
+    reservoir_states = np.load(path + 'reservoir_states.npy', allow_pickle=True)
+
+    # UMAP embedding
+    reducer = umap.UMAP(n_neighbors=n_neighbors)
+    embedding = reducer.fit_transform(reservoir_states)
+
+    # Plot
+    plt.figure(figsize=(10, 6))
+    plt.scatter(embedding[:, 0], embedding[:, 1], color='red', alpha=1, s=2)
+    plt.title("UMAP of the bot's internal state")
     plt.xlabel("UMAP Dimension 1")
     plt.ylabel("UMAP Dimension 2")
     plt.show()
@@ -497,6 +515,7 @@ if __name__ == '__main__':
     #plot_PCA_3D()
     #plot_PCA_3D_with_distance()
     #plot_SVM_predictions()
+    gather_reservoir_states_central_corridor(cues=False)
     plot_UMAP(cues=False, n_neighbors=5)
     #plot_UMAP_error_case()
 

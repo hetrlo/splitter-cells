@@ -88,9 +88,10 @@ def activity_map(neuron_activity, positions, explo_map, resolution):
     map
     return map
 
+from matplotlib.colors import Normalize
 def plot_activity_map(neuron, positions, explo_map, resolution):
     map = activity_map(neuron, positions, explo_map, resolution)
-    plt.imshow(map.T, cmap = 'inferno', origin='lower')
+    plt.imshow(map.T, cmap = 'bwr', origin='lower', vmin=-1, vmax=1)
     plt.show()
 
 # Maps the mean neurons activity across the maze (to reveal potential bias)
@@ -126,7 +127,7 @@ def show_place_fields(resolution):
 
 # Detecting place cells using the Peak method
 def place_cells_detection_peak(resolution):
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/mix/maze_other/"
     #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
     r = load_reservoir_states(path)
     res_states = r.T[:150].T[450:1100]
@@ -162,11 +163,11 @@ def place_cells_detection_peak(resolution):
 
 #########################################################################################################################################
 
-# Detecting place cells using stability method
+# Detecting place cells using stability method TODO: to be fixed, seems to be irrelevant
 def place_cells_detection_stability(resolution):
     #path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
     #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/maze_other/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/mix/maze_other/"
     res_states = load_reservoir_states(path).T[:150].T
     #res_states = np.array([res_states.T[953], res_states.T[1457], res_states.T[323], res_states.T[267], res_states.T[1251]]).T
     ##res_states = np.array([res_states.T[81], res_states.T[1486], res_states.T[23], res_states.T[1201]]).T
@@ -207,7 +208,7 @@ def place_cells_detection_stability(resolution):
 
 # Radius defines the size of a place field
 def place_cells_filter_specificity(resolution, radius):
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/maze_other/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/mix/maze_other/"
     #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
     r = load_reservoir_states(path)[:2000]
     res_states = r
@@ -231,7 +232,7 @@ def place_cells_filter_specificity(resolution, radius):
                 #else:
                     #map_comp[i,j] = act_map[i,j]
         
-        mf_non_zero = map_field[map_field != 0]
+        mf_non_zero = map_field[map_field > 0]
         mc_non_zero = act_map[act_map > 0]
         
         # Testing whether any array is empty (given that all values are now non zero)
@@ -245,13 +246,16 @@ def place_cells_filter_specificity(resolution, radius):
             peak_comp = np.sum(mc_non_zero)
         
         return [peak_field, peak_comp]
+    
 
     # Array with each neurons mean activity across the maze
     activity_maps = np.array([activity_map(state, positions, explo_map, resolution) for state in res_states.T])
     
     delta_peaks = np.array([diff_mean(activity_maps[i], radius) for i in range(nb_neurons)])
 
-    is_place_cell = [delta_peaks[i,0] > 0.5 * delta_peaks[i,1] for i in range(nb_neurons)]
+    print(delta_peaks[16])
+
+    is_place_cell = [delta_peaks[i,0] > 0.9 * delta_peaks[i,1] for i in range(nb_neurons)]
     #is_place_cell = [delta_peaks[i,0] > 0.4 and delta_peaks[i,1] <= 0 for i in range(nb_neurons)]
     place_cells = np.argwhere(is_place_cell)
     return place_cells.ravel()
@@ -318,9 +322,14 @@ def plot_derivate_activity():
     plt.show()
 
 
+path = "/home/heloise/Mnémosyne/splitter-cells/trials/mix/maze_other/"
+state = load_reservoir_states(path).T[454].T[:2000]
+positions = load_positions(path)[:2000]
+
 #exploratory_map((6,10))
 #print(walls_collision_percentage())
 #show_place_fields((6,10))
+plot_activity_map(state, positions, exploratory_map((12,20), positions), (12,20))
 
 #place_cells_peak = place_cells_detection_peak((12,20))
 #print(place_cells_peak)
@@ -328,11 +337,7 @@ def plot_derivate_activity():
 #place_cells_stab = place_cells_detection_stability((12,20))
 #print(place_cells_stab)
 
-path = "/home/heloise/Mnémosyne/splitter-cells/trials/random_walls/reservoir_states/"
-state = load_reservoir_states(path).T[139].T[:]
-plot_activity_map(state, load_positions(path), exploratory_map((36,60), load_positions(path)), (36,60))
-
-#place_cells_spec_fliltered = place_cells_filter_specificity((36,60), 2)
+#place_cells_spec_fliltered = place_cells_filter_specificity((12,20), 1)
 #print(place_cells_spec_fliltered)
 
 #pc_stab_fil = place_cells_stability_filter((36,60))
