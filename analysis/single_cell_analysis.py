@@ -61,28 +61,6 @@ def load_orientations(path):
     return np.load(path + 'output.npy')
 
 
-# Trying to fit an esn to compute position from the activity
-def position_from_activity(): # A opti, très clairement.
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
-    positions = load_positions(path)
-    positions = np.array([positions[:,0], positions[:,1]]).transpose()
-    print(positions.shape)
-    activity = load_reservoir_states(path)
-
-    reservoir = rp.Reservoir(1000, input_scaling=1, sr=0.9,
-                            lr=0.5, rc_connectivity=0.2,
-                            input_connectivity=0.1, seed=1, noise_rc=0)
-
-    readout = rp.Ridge(ridge=0.002)
-    esn = reservoir >> readout
-    X_train, Y_train, X_test, Y_test = activity[:1000], positions[:1000], activity[1000:], positions[1000:]
-
-    esn.fit(X_train, Y_train, warmup=100)
-    pos_pred = esn.run(X_test)
-    plt.plot(pos_pred, label="Position prediction from activity")
-    plt.plot(Y_test, label="Actual position")
-    plt.show()
-
 def find_location_indexes(y_positions):
     """
         This function identifies location indexes ('m' for middle, 'r' for right, 'l' for left)
@@ -602,8 +580,9 @@ def plot_hippocampal_cells(neurons):
     
     fig, axes = plt.subplots(1, len(neurons), figsize=(12, 4))  # Increased figure width
     #path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/mix/maze_other_noisy/"
+    #path = "/home/heloise/Mnémosyne/splitter-cells/trials/mix/maze_other_noisy/"
     #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells_results/braitenberg >> pool/analysis maze/leak_rate=0.005/comparison_RR-LL/"
     positions = load_positions(path)
     res_activity = load_reservoir_states(path)
 

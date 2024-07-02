@@ -311,7 +311,8 @@ def gather_reservoir_states_central_corridor(cues=False):
     if cues:
         path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/cues/reservoir_states/"
     else:
-        path = "/home/heloise/Mnémosyne/splitter-cells/trials/comparison_RR-LL/"
+        #path = "/home/heloise/Mnémosyne/splitter-cells_results/braitenberg >> pool/analysis maze/leak_rate=0.005/comparison_RR-LL/"
+        path = "/home/heloise/Mnémosyne/splitter-cells_results/braitenberg >> pool/maze_other/"
 
     reservoir_states = np.load(path + 'reservoir_states.npy')
     positions = np.load(path + 'positions.npy')
@@ -378,7 +379,7 @@ def gather_reservoir_states_central_corridor(cues=False):
     return reservoir_states_corridor
 
 
-def plot_UMAP(cues=False, n_neighbors=5):
+def plot_UMAP(cues=False, n_neighbors=10):
     """
         Plot UMAP (Uniform Manifold Approximation and Projection) visualization of reservoir states.
 
@@ -396,7 +397,7 @@ def plot_UMAP(cues=False, n_neighbors=5):
         path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/cues/reservoir_states/"
     else:
         #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
-        path = "/home/heloise/Mnémosyne/splitter-cells/trials/comparison_RR-LL/"
+        path = "/home/heloise/Mnémosyne/splitter-cells_results/braitenberg >> pool/analysis maze/leak_rate=0.005/comparison_RR-LL/"
 
     # Load reservoir states
     reservoir_states = np.load(path + 'reservoir_states_corridor.npy', allow_pickle=True).item()
@@ -413,7 +414,7 @@ def plot_UMAP(cues=False, n_neighbors=5):
                                  reservoir_states['LL'], reservoir_states['RL'])).reshape((-1, 1000))
 
     # UMAP embedding
-    reducer = umap.UMAP(n_neighbors=n_neighbors)
+    reducer = umap.UMAP(n_neighbors=n_neighbors, n_components=3)
     embedding = reducer.fit_transform(all_states)
 
     # Create labels and values for coloring
@@ -426,8 +427,9 @@ def plot_UMAP(cues=False, n_neighbors=5):
     colours = ListedColormap([col_traj['RR'], col_traj['LR'], col_traj['LL'], col_traj['RL']])
 
     # Plot
-    plt.figure(figsize=(10, 6))
-    scatter = plt.scatter(embedding[:, 0], embedding[:, 1], c=values, cmap=colours, alpha=1, s=2)
+    fig = plt.figure(figsize=(10, 6))
+    ax = fig.add_subplot(projection='3d')
+    scatter = ax.scatter(embedding[:, 0], embedding[:, 1], embedding[:, 2], c=values, cmap=colours, alpha=1)
     plt.legend(handles=scatter.legend_elements()[0], labels=labels)
     plt.title("UMAP of the bot's internal state in the central corridor")
     plt.xlabel("UMAP Dimension 1")
@@ -435,7 +437,8 @@ def plot_UMAP(cues=False, n_neighbors=5):
     plt.show()
 
 def plot_UMAP_general(cues=False, n_neighbors=5):
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/comparison_RR-LL/"
+    #path = "/home/heloise/Mnémosyne/splitter-cells/trials/random_walls/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells_results/braitenberg >> pool/maze_other_noisy/"
     reservoir_states = np.load(path + 'reservoir_states.npy', allow_pickle=True)
 
     # UMAP embedding
@@ -443,8 +446,9 @@ def plot_UMAP_general(cues=False, n_neighbors=5):
     embedding = reducer.fit_transform(reservoir_states)
 
     # Plot
-    plt.figure(figsize=(10, 6))
-    plt.scatter(embedding[:, 0], embedding[:, 1], color='red', alpha=1, s=2)
+    fig = plt.figure(figsize=(10, 6))
+    #ax = fig.add_subplot(projection='3d')
+    plt.scatter(embedding[:, 0], embedding[:, 1], color='green', alpha=1)
     plt.title("UMAP of the bot's internal state")
     plt.xlabel("UMAP Dimension 1")
     plt.ylabel("UMAP Dimension 2")
@@ -515,8 +519,9 @@ if __name__ == '__main__':
     #plot_PCA_3D()
     #plot_PCA_3D_with_distance()
     #plot_SVM_predictions()
-    gather_reservoir_states_central_corridor(cues=False)
-    plot_UMAP(cues=False, n_neighbors=5)
+    #gather_reservoir_states_central_corridor(cues=False)
+    #plot_UMAP(cues=False, n_neighbors=10)
+    plot_UMAP_general(n_neighbors=50)
     #plot_UMAP_error_case()
 
 
