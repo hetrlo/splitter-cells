@@ -122,6 +122,32 @@ def plot_PCA_3D(cues=False):
     ax.legend()
     plt.show()
 
+def plot_PCA_3D_general():
+    #path = "/home/heloise/Mnémosyne/splitter-cells_results/trials/random_walls/reservoir_states/"
+    path = "/home/heloise/Mnémosyne/splitter-cells_results/braitenberg >> pool/analysis maze/leak_rate=1/comparison_RR-LL/"
+    res_activity = np.load(path + 'reservoir_states.npy')
+    pca = PCA(n_components=3)
+    x = StandardScaler().fit_transform(res_activity)
+    # Computing PCA
+    principalComponents = pca.fit_transform(x)
+    Xax = principalComponents[:, 0]
+    Yax = principalComponents[:, 1]
+    Zax = principalComponents[:, 2]
+    # Plotting
+    fig = plt.figure(figsize=(7, 7))
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(Xax, Yax, Zax)
+
+    # for loop ends
+    ax.set_xlabel("PCA 1")
+    ax.set_ylabel("PCA 2")
+    ax.set_zlabel("PCA 3")
+    ax.set_title('PCA analysis of the reservoir states ')
+
+    ax.grid(False)
+    plt.show()
+
+
 
 def plot_PCA_3D_with_distance(cues=False):
     """
@@ -517,11 +543,12 @@ def plot_UMAP_error_case():
 
 if __name__ == '__main__':
     #plot_PCA_3D()
+    plot_PCA_3D_general()
     #plot_PCA_3D_with_distance()
     #plot_SVM_predictions()
     #gather_reservoir_states_central_corridor(cues=False)
     #plot_UMAP(cues=False, n_neighbors=10)
-    plot_UMAP_general(n_neighbors=50)
+    #plot_UMAP_general(n_neighbors=50)
     #plot_UMAP_error_case()
 
 
