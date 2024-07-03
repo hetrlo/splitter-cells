@@ -151,6 +151,18 @@ def place_cells_detection_stability(resolution):
 
 #############################################################################################################################################
 
+def draw_place_cell(resolution, radius):
+    cell = np.zeros(resolution)
+    middle = (floor(resolution[0]/2), floor(resolution[1]/2))
+    for x in range(resolution[0]):
+        for y in range(resolution[1]):
+            if (abs(x-middle[0]) <= radius) and (abs(y-middle[1]) <= radius):
+                cell[x,y] = 0.5
+    cell[middle[0], middle[1]] = 1
+    plt.imshow(cell.T, cmap='coolwarm', vmin=-1, vmax=1, origin='lower')
+    plt.show()
+    return cell
+
 # Radius defines the size of a place field
 def place_cells_filter_specificity(resolution, radius):
     path = "/home/heloise/Mnémosyne/splitter-cells_results/braitenberg >> pool/maze_other/"
@@ -173,6 +185,7 @@ def place_cells_filter_specificity(resolution, radius):
                 # In the place field
                 if (pos_max[0]-radius <= i <= pos_max[0]+radius) and (pos_max[1]-radius <= j <= pos_max[1]+radius):
                     map_field[i,j] = act_map[i,j]
+                    print(i,j)
                 # Outside
                 #else:
                     #map_comp[i,j] = act_map[i,j]
@@ -196,11 +209,10 @@ def place_cells_filter_specificity(resolution, radius):
     # Array with each neurons mean activity across the maze
     activity_maps = np.array([activity_map(state, positions, explo_map, resolution) for state in res_states.T])
     
-    delta_peaks = np.array([diff_mean(activity_maps[i], radius) for i in range(nb_neurons)])
-
-    print(delta_peaks[16])
-
-    is_place_cell = [delta_peaks[i,0] > 0.9 * delta_peaks[i,1] for i in range(nb_neurons)]
+    #delta_peaks = np.array([diff_mean(activity_maps[i], radius) for i in range(nb_neurons)])
+    delta_peaks = np.array([diff_mean(draw_place_cell(resolution, radius), radius)])
+    print(delta_peaks)
+    is_place_cell = [delta_peaks[i,0] > 0.9 * delta_peaks[i,1] for i in range(len(delta_peaks))]
     #is_place_cell = [delta_peaks[i,0] > 0.4 and delta_peaks[i,1] <= 0 for i in range(nb_neurons)]
     place_cells = np.argwhere(is_place_cell)
     return place_cells.ravel()
@@ -274,8 +286,10 @@ positions = load_positions(path)[:2000]
 #place_cells_stab = place_cells_detection_stability((12,20))
 #print(place_cells_stab)
 
-#place_cells_spec_fliltered = place_cells_filter_specificity((12,20), 1)
-#print(place_cells_spec_fliltered)
+place_cells_spec_fliltered = place_cells_filter_specificity((12,20), 1)
+print(place_cells_spec_fliltered)
 
 #pc_stab_fil = place_cells_stability_filter((36,60))
 #print(pc_stab_fil)
+
+#draw_place_cell((36,60), 2)

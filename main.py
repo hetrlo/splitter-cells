@@ -27,14 +27,14 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'maze_other' # 'maze', 'maze_four', 'random_walls', 'maze_other'
+maze = 'empty' # 'maze', 'maze_four', 'random_walls', 'maze_other'
 task = 'wander' #'RR-LL', 'R-L', 'wander'
 simulation_mode = 'mix'  # 'data', 'walls', 'esn', 'mix'
 cues = False
 noise = True # adds noise in walls and mix mode
-save_reservoir_states = False
-save_bot_states = False
-path_to_save = './trials/mix/maze_other_noisy/'
+save_reservoir_states = True
+save_bot_states = True
+path_to_save = './trials/mix/empty/'
 
 
 if __name__ == '__main__':
@@ -56,12 +56,12 @@ if __name__ == '__main__':
             data_folder = "data/RR-LL/no_cues/"
             # data_folder = "data/RR-LL/no_cues/error_case/"
     elif task == 'wander':
-        if maze == 'random_walls':
+        if maze == 'random_walls' or maze == 'empty':
             print("Run the wander around and find out task :)")
 
             if simulation_mode == 'esn':
                 model_file = "trials/training_random_walls/second_attempt/model_settings_wander.json"
-            elif simulation_mode == 'mix':
+            elif simulation_mode == 'mix' or simulation_mode == 'walls':
                 model_file = "trials/mix/reservoir_settings.json"
 
             data_folder = "trials/training_random_walls/second_attempt/"

@@ -448,3 +448,53 @@ class MazeOther:
         ax.set_yticklabels([])
         ax.tick_params(axis='both', which='major', size=0)
         ax.tick_params(axis='both', which='minor', size=0)
+
+class Empty:
+    """ An empty maze. Simple. Clean. Cute.
+    """
+
+    def __init__(self, simulation_mode = "esn"):
+        self.name = 'empty'
+        # Surrounding walls
+        self.walls = create_wall((0,0), (300,0), (300,500), (0,500))
+        self.walls = np.array(self.walls)
+
+        if simulation_mode == "walls":
+            self.invisible_walls = True
+        else:
+            self.invisible_walls = False
+        
+    
+    def draw(self, ax, grid=True, margin=5):
+        """
+        Render the maze
+        """
+
+        # Building a filled patch from walls
+        V, C, S = [], [], self.walls # Visible walls
+        n_walls = len(S)//4 # For now is ok, but careful
+        for k in range(n_walls):
+            V.extend(S[4*k + i, 0] for i in [0, 1, 2, 3, 0])
+
+        C = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO, Path.CLOSEPOLY] * n_walls
+        path = Path(V, C)
+        patch = PathPatch(path, clip_on=False, linewidth=1.5,
+                          edgecolor="black", facecolor="white")
+        
+
+        # Set figure limits, grid and ticks
+        ax.set_axisbelow(True)
+        ax.add_artist(patch)
+        ax.set_xlim(0 - margin, 300 + margin)
+        ax.set_ylim(0 - margin, 500 + margin)
+        if grid:
+            ax.xaxis.set_major_locator(MultipleLocator(100))
+            ax.xaxis.set_minor_locator(MultipleLocator(10))
+            ax.yaxis.set_major_locator(MultipleLocator(100))
+            ax.yaxis.set_minor_locator(MultipleLocator(10))
+            ax.grid(True, "major", color="0.75", linewidth=1.00, clip_on=False)
+            ax.grid(True, "minor", color="0.75", linewidth=0.50, clip_on=False)
+        ax.set_xticklabels([])
+        ax.set_yticklabels([])
+        ax.tick_params(axis='both', which='major', size=0)
+        ax.tick_params(axis='both', which='minor', size=0)

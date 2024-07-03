@@ -100,12 +100,12 @@ def plot_comparison_pred_test(resolution, pos_pred, pos_test):
     # Plotting comparisons for x and y
     x_pred, x_test = np.array(x_pred), np.array(x_test)
     plt.plot(x_pred, color='blue')
-    #plt.plot(x_test, color='orange', linestyle=":")
+    plt.plot(x_test, color='orange', linestyle=":")
     #plt.plot(np.abs(x_pred-x_test), color='black')
     plt.show()
     y_pred, y_test = np.array(y_pred), np.array(y_test)
     plt.plot(y_pred, color='blue')
-    #plt.plot(y_test, color='orange', linestyle=":")
+    plt.plot(y_test, color='orange', linestyle=":")
     #plt.plot(np.abs(y_pred-y_test), color='black')
     plt.show()
 
@@ -128,12 +128,12 @@ def plot_pred_pos(xpred, ypred, xtest, ytest):
     # Plotting comparisons for x and y
     x_pred, x_test = np.array(x_pred), np.array(x_test)
     plt.plot(x_pred, color='blue')
-    #plt.plot(x_test, color='orange', linestyle=":")
+    plt.plot(x_test, color='orange', linestyle=":")
     #plt.plot(np.abs(x_pred-x_test), color='black')
     plt.show()
     y_pred, y_test = np.array(y_pred), np.array(y_test)
     plt.plot(y_pred, color='blue')
-    #plt.plot(y_test, color='orange', linestyle=":")
+    plt.plot(y_test, color='orange', linestyle=":")
     #plt.plot(np.abs(y_pred-y_test), color='black')
     plt.show()
 
@@ -208,8 +208,8 @@ def position_from_sensors(resolution, path, nb_train):
     act_test = scaler.transform(act_test)
 
     classifier = MLPClassifier(solver='sgd', alpha=1e-5, 
-                               hidden_layer_sizes=(50,),
-                                random_state=1, max_iter=500)
+                               hidden_layer_sizes=(20,),
+                                random_state=1, max_iter=200)
     classifier.fit(act_train, pos_train)
 
     # Classification
@@ -252,3 +252,7 @@ def plot_activity_map(neuron, positions, explo_map, resolution):
     map = activity_map(neuron, positions, explo_map, resolution)
     plt.imshow(map.T, cmap = 'bwr', origin='lower', vmin=-1, vmax=1)
     plt.show()
+
+path = "/home/heloise/Bureau/traj_à_garder/maze_other/"
+path = "/home/heloise/Mnémosyne/splitter-cells_results/braitenberg >> pool/maze_other/"
+position_from_activity((6,10), path, 5000)
