@@ -1,6 +1,5 @@
 import numpy as np
 import random as rd
-rd.seed(1)
 from matplotlib.collections import LineCollection
 from matplotlib.patches import Circle
 from maze import line_intersect
@@ -14,6 +13,8 @@ class Bot:
         #self.orientation = 60
         self.position = 150,250
         self.orientation = 0
+        self.index = 0
+        self.pos_history = [0 for i in range(10)]
         self.n_sensors = 8
         self.noisy = noise
 
@@ -136,13 +137,26 @@ class Bot:
         if abs(dv) > 0.01:  # if 75 sensor size
             self.orientation += 0.015 * dv
             if self.noisy:
-                self.orientation += rd.choice([0 for i in range(25)] + [rd.uniform(-1, 1)])
+                if rd.uniform(0,1) < 0.005:
+                    self.orientation += rd.choice([-1, 1])
 
     def update_position(self, maze):
         """Updates the position of the bot according to the calculated orientation."""
         self.position += 2 * np.array([np.cos(self.orientation), np.sin(self.orientation)])
         #self.position += np.random.normal(0, 1) * 0.7
         self.set_wall_constraints(maze)
+        # Avoiding getting stuck (bijective function)
+        self.pos_history[self.index%len(self.pos_history)] = self.position[0] + 500*self.position[1]
+        self.index += 1
+        # Testing is the bot has been stuck for 10 steps
+        all_equal = True
+        for i in range(1, len(self.pos_history)):
+            if self.pos_history[0] != self.pos_history[i]:
+                all_equal = False
+                break
+        if all_equal:
+            self.orientation += rd.choice([-5,5])
+
 
     def update(self, maze, cues):
         """ Update the bot's position and orientation in the maze """

@@ -582,13 +582,12 @@ def plot_hippocampal_cells(neurons):
     #path = "/home/heloise/Mnémosyne/splitter-cells/trials/first_attempt/reservoir_states/"
     #path = "/home/heloise/Mnémosyne/splitter-cells/trials/mix/maze_other_noisy/"
     #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
-    path = "/home/heloise/Mnémosyne/splitter-cells_results/braitenberg >> pool/maze_other_noisy/"
+    path = "/home/heloise/Mnémosyne/splitter-cells/trials/mix/maze_other_noisy/"
     positions = load_positions(path)
     res_activity = load_reservoir_states(path)
 
     start_path = 0
-    end_path = 5000
-    print(len(positions))
+    end_path = 1000
 
     for ax, neuron in zip(axes, neurons):
         plot_place_cells(ax=ax, place_cells=neuron, line=2,
@@ -937,7 +936,7 @@ from random import seed, sample
 if __name__ == '__main__':
     #raster_plot() # Specific to the loop
     #plot_head_direction_cells()
-    plot_hippocampal_cells([397,938,535,233,528])
+    plot_hippocampal_cells(sample(range(0,1000), 5))
     #plot_hippocampal_cells([283,504,737,943])
     #plot_hippocampal_cells_3() # Loop, corner and place cells
     #plot_splitter_cells_count()
