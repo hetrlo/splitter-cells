@@ -27,14 +27,14 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'empty' # 'maze', 'maze_four', 'random_walls', 'maze_other'
-task = 'wander' #'RR-LL', 'R-L', 'wander'
+maze = 'maze' # 'maze', 'maze_four', 'random_walls', 'maze_other'
+task = 'RR-LL' #'RR-LL', 'R-L', 'wander'
 simulation_mode = 'mix'  # 'data', 'walls', 'esn', 'mix'
 cues = False
-noise = True # adds noise in walls and mix mode
-save_reservoir_states = True
-save_bot_states = True
-path_to_save = './trials/mix/empty/'
+noise = False # adds noise in walls and mix mode (might not be useful)
+save_reservoir_states = False
+save_bot_states = False
+path_to_save = '/home/heloise/Mnémosyne/splitter-cells-results/traj/mix/RR-LL after setup/'
 
 
 if __name__ == '__main__':
@@ -53,7 +53,9 @@ if __name__ == '__main__':
             data_folder = "data/RR-LL/cues/"
         else:
             model_file = "model_settings/model_RR-LL_no_cues.json"
-            data_folder = "data/RR-LL/no_cues/"
+            data_folder = "/home/heloise/Mnémosyne/splitter-cells-results/traj/esn/RR-LL/"
+            #data_folder = 'data/RR-LL/no_cues/' # marche bien
+            data_setup = 'data/RR-LL/no_cues/' # for 'mix' mode
             # data_folder = "data/RR-LL/no_cues/error_case/"
     elif task == 'wander':
         if maze == 'random_walls' or maze == 'empty':
@@ -79,13 +81,13 @@ if __name__ == '__main__':
         raise Exception("Task name {}".format(task) + " is not recognized.")
 
     # Set up the experiment
-    exp = Experiment(model_file, data_folder, simulation_mode, maze, task, cues, noise, 
+    exp = Experiment(model_file, data_folder, data_setup, simulation_mode, maze, task, cues, noise, 
                      save_reservoir_states=save_reservoir_states,
                      save_bot_states=save_bot_states)
 
     # Set up the animation
     anim = animation.FuncAnimation(exp.simulation_visualizer.fig, exp.run,
-                                   frames=50000, interval=1, repeat=False)
+                                   frames=len(exp.positions), interval=1, repeat=False)
     plt.tight_layout()
     plt.show()
 
@@ -105,7 +107,7 @@ if __name__ == '__main__':
         if simulation_mode == 'esn':
             np.save(path_to_save + 'reservoir_states.npy', exp.model.reservoir_states)
         elif simulation_mode == 'mix':
-                np.save(path_to_save + 'reservoir_states.npy', exp.pool.reservoir_states)
+            np.save(path_to_save + 'reservoir_states.npy', exp.pool.reservoir_states)
 
 
 

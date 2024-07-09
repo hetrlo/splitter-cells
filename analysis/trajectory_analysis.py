@@ -152,12 +152,12 @@ def position_from_activity(resolution, path, nb_train):
     act_test = scaler.transform(act_test)
 
     classifier_x = MLPClassifier(solver='adam', alpha=1e-5, 
-                               hidden_layer_sizes=(20,),
+                               hidden_layer_sizes=(50,),
                                 random_state=1, max_iter=200)
     classifier_x.fit(act_train, pos_train_x)
 
     classifier_y = MLPClassifier(solver='adam', alpha=1e-5, 
-                               hidden_layer_sizes=(20,),
+                               hidden_layer_sizes=(20,20),
                                 random_state=1, max_iter=200)
     classifier_y.fit(act_train, pos_train_y)
 
@@ -166,7 +166,7 @@ def position_from_activity(resolution, path, nb_train):
     pred_y = classifier_y.predict(act_test)
     print("Classifier x score:", classifier_x.score(act_test, pos_test_x))
     print("Classifier y score:", classifier_y.score(act_test, pos_test_y))
-    plot_pred_pos(pred_x, pred_y, pos_test_x, pos_test_y)
+    #plot_pred_pos(pred_x, pred_y, pos_test_x, pos_test_y)
 
 def posfromact(resolution, path, nb_train):
     activities = load_reservoir_states(path)
@@ -184,7 +184,7 @@ def posfromact(resolution, path, nb_train):
     act_test = scaler.transform(act_test)
 
     classifier = MLPClassifier(solver='adam', alpha=1e-5, 
-                               hidden_layer_sizes=(20,),
+                               hidden_layer_sizes=(20,20),
                                 random_state=1, max_iter=200)
     classifier.fit(act_train, pos_train)
 
@@ -196,6 +196,7 @@ def posfromact(resolution, path, nb_train):
 def position_from_sensors(resolution, path, nb_train):
     sensors = load_sensors(path)
     positions = load_positions(path)
+
     # Preprocessing positions : array of (res[0] + res[1]) ints 
     # (0s and two 1s to indicate x and y)
     disc_pos = preprocess_positions(resolution, positions)
@@ -207,15 +208,15 @@ def position_from_sensors(resolution, path, nb_train):
     act_train = scaler.transform(act_train)
     act_test = scaler.transform(act_test)
 
-    classifier = MLPClassifier(solver='sgd', alpha=1e-5, 
-                               hidden_layer_sizes=(20,),
+    classifier = MLPClassifier(solver='adam', alpha=1e-5, 
+                               hidden_layer_sizes=(50,),
                                 random_state=1, max_iter=200)
     classifier.fit(act_train, pos_train)
 
     # Classification
     pos_predicted = classifier.predict(act_test)
     print("Classifier score :", classifier.score(act_test, pos_test))
-    plot_comparison_pred_test(resolution, pos_predicted, pos_test)
+    #plot_comparison_pred_test(resolution, pos_predicted, pos_test)
 
 # Returns an array with the amount of times the bot entered each bin
 def exploratory_map(resolution, positions):
@@ -253,6 +254,6 @@ def plot_activity_map(neuron, positions, explo_map, resolution):
     plt.imshow(map.T, cmap = 'bwr', origin='lower', vmin=-1, vmax=1)
     plt.show()
 
-path = "/home/heloise/Bureau/traj_à_garder/maze_other/"
-path = "/home/heloise/Mnémosyne/splitter-cells_results/braitenberg >> pool/maze_other/"
-position_from_activity((6,10), path, 5000)
+path = "/home/heloise/Mnémosyne/splitter-cells/trials/random_walls/reservoir_states/"
+position_from_sensors((6,10), path, 2000)
+position_from_activity((6,10), path, 2000)

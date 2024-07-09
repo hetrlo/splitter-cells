@@ -586,7 +586,8 @@ def plot_hippocampal_cells(path, neurons):
     res_activity = load_reservoir_states(path)
 
     start_path = 0
-    end_path = len(positions)
+    print(len(positions))
+    end_path = 4000
 
     for ax, neuron in zip(axes, neurons):
         plot_place_cells(ax=ax, place_cells=neuron, line=2,
@@ -892,7 +893,7 @@ def plot_RSA_matrix(cues=False):
         path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/cues/reservoir_states/"
     else:
         path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
-
+        path = "/home/heloise/Mnémosyne/splitter-cells-results/traj/mix/maze_RR_LL/"
     # Load reservoir states
     reservoir_states = np.load(path + 'reservoir_states_corridor.npy', allow_pickle=True).item()
 
@@ -900,13 +901,13 @@ def plot_RSA_matrix(cues=False):
 
     for trajectory in ('RL', 'LR', 'RR', 'LL'):
         mean_activities[trajectory] = []
-        for i in range(10):
+        for i in range(7):
             mean_activities[trajectory].append(np.mean(reservoir_states[trajectory][i], axis=0))
         mean_activities[trajectory] = np.array(mean_activities[trajectory])
 
     splitter_cells = find_splitter_cells(mean_activities['LR'][0], mean_activities['RL'][0], 0.1)
 
-    splitter_cells = [38, 312, 498]
+    #splitter_cells = splitter_cells[]
 
     n_neurons = 3
 
@@ -933,10 +934,10 @@ def plot_RSA_matrix(cues=False):
 
 from random import seed, sample
 if __name__ == '__main__':
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/mix/empty/"
+    path = "/home/heloise/Mnémosyne/splitter-cells-results/traj/esn/RR-LL/"
     #raster_plot() # Specific to the loop
     #plot_head_direction_cells()
-    plot_hippocampal_cells(path, sample(range(0,1000), 5))
+    plot_hippocampal_cells(path, [0,1,2,3,4])
     #plot_hippocampal_cells([283,504,737,943])
     #plot_hippocampal_cells_3() # Loop, corner and place cells
     #plot_splitter_cells_count()

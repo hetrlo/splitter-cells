@@ -7,10 +7,7 @@ This repository provides the source code to simulate a bot executing an 8-Maze n
 ### Dependencies
 
 -  *numpy*, *scipy*, *sklearn*, *matplotlib*
-- *umap*
 - *optuna* 
-- *torch*
-- *os*
 - *mlflow*
 - *seaborn*
 - *umap*, *umap-learn*

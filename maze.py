@@ -69,7 +69,7 @@ class Maze:
             [(200, 300), (300, 250)]
         ])
 
-        if simulation_mode == "walls" or simulation_mode == "mix":
+        if simulation_mode == "walls":
             self.invisible_walls = True
         else:
             self.invisible_walls = False
@@ -300,6 +300,7 @@ def create_wall(bl, br, tr, tl): # bottom-left, bottom-right...
         [tr,tl],
         [tl,bl]
     ]
+
 class RandomWalls:
     """ A maze with random objects
     """
@@ -498,3 +499,5 @@ class Empty:
         ax.set_yticklabels([])
         ax.tick_params(axis='both', which='major', size=0)
         ax.tick_params(axis='both', which='minor', size=0)
+
+############################################################################################################

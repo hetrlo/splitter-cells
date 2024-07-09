@@ -62,8 +62,9 @@ class Model:
         self.reservoir = Reservoir(units, input_scaling=input_scaling, sr=spectral_radius,
                                   lr=leak_rate, rc_connectivity=connectivity,
                                   input_connectivity=input_connectivity, seed=seed, noise_rc=noise_rc)
-
+        
         readout = Ridge(1, ridge=regularization)
+        #self.reservoir << readout
         self.esn = self.reservoir >> readout
         X_train, Y_train, X_test, Y_test = split_train_test(self.input, output, self.nb_train)
 

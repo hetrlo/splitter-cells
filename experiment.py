@@ -21,7 +21,7 @@ class Experiment:
     """
     This class runs the experiment.
     """
-    def __init__(self, model_file, data_folder, simulation_mode, maze, task, cues, noise, save_reservoir_states, save_bot_states):
+    def __init__(self, model_file, data_folder, data_setup, simulation_mode, maze, task, cues, noise, save_reservoir_states, save_bot_states):
 
         self.task = task
         self.simulation_mode = simulation_mode
@@ -50,9 +50,10 @@ class Experiment:
         self.simulation_visualizer = SimulationVisualizer(self.bot.n_sensors)
         self.model_file = model_file
         self.data_folder = data_folder
+        self.data_setup = data_setup
         self.save_reservoir_states = save_reservoir_states
 
-        if self.simulation_mode == 'data':
+        if self.simulation_mode == 'data' or self.simulation_mode == 'mix':
             self.output = np.load(self.data_folder + 'output.npy')
             self.positions = np.load(self.data_folder + 'positions.npy')
             self.input = np.load(self.data_folder + 'input.npy')
@@ -64,8 +65,8 @@ class Experiment:
             # To choose where the bot starts after training
             #self.bot.position = [150,250]
 
-        elif self.simulation_mode == 'mix':
-            self.pool = Pool(model_file=self.model_file,
+        if self.simulation_mode == 'mix':
+            self.pool = Pool(model_file=self.model_file, data_setup=self.data_setup, 
                                save_reservoir_states=self.save_reservoir_states)
 
         self.maze.draw(self.simulation_visualizer.ax, grid=True, margin=15)
@@ -73,10 +74,13 @@ class Experiment:
 
     def run(self, frame):
 
-        if self.simulation_mode == 'data':
+        if self.simulation_mode == 'data' or self.simulation_mode == 'mix':
             self.bot.orientation = self.output[frame]
             self.bot.position = self.positions[frame]
             self.bot.update(self.maze, cues=self.cues)
+
+            if self.simulation_mode =='mix':
+                self.pool.process(self.bot.sensors, self.cues)
 
         else:
             if self.cues:
@@ -84,7 +88,7 @@ class Experiment:
             else:
                 cues = None
 
-            if self.simulation_mode == 'walls' or self.simulation_mode == 'mix':
+            if self.simulation_mode == 'walls':
                 self.bot.update_position(self.maze)
                 self.bot.compute_orientation()
                 if self.task == 'R-L':
@@ -93,12 +97,8 @@ class Experiment:
                     self.maze.update_walls_RR_LL(self.bot.position)
                 elif self.task == 'wander':
                     pass
-                if self.simulation_mode =='mix':
-                    self.pool.process(self.bot.sensors, cues)
 
             elif self.simulation_mode == 'esn':
-                #if self.task == "wander":
-                #    self.maze.update_walls(self.bot.position)
                 self.bot.update_position(self.maze)
                 self.bot.orientation = self.model.process(self.bot.sensors, cues)                
 
