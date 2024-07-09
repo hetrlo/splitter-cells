@@ -4,6 +4,7 @@ from simulation_visualizer import SimulationVisualizer
 import numpy as np
 from esn_model import Model
 from neuron_pool import Pool
+from typing import *
 
 """
 - automatic navigation with walls (braitenberg+walls) 'walls_directed'
@@ -21,7 +22,7 @@ class Experiment:
     """
     This class runs the experiment.
     """
-    def __init__(self, model_file, data_folder, data_setup, simulation_mode, maze, task, cues, noise, save_reservoir_states, save_bot_states):
+    def __init__(self, model_file, data_folder, data_setup : Optional[str], simulation_mode, maze, task, cues, noise, save_reservoir_states, save_bot_states):
 
         self.task = task
         self.simulation_mode = simulation_mode

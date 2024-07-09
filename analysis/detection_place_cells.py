@@ -62,7 +62,7 @@ def activity_map(neuron_activity, positions, explo_map, resolution):
     map
     return map
 
-from matplotlib.colors import Normalize
+# from matplotlib.colors import Normalize
 def plot_activity_map(neuron, positions, explo_map, resolution):
     map = activity_map(neuron, positions, explo_map, resolution)
     plt.imshow(map.T, cmap = 'bwr', origin='lower', vmin=-1, vmax=1)

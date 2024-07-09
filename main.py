@@ -27,14 +27,15 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'maze' # 'maze', 'maze_four', 'random_walls', 'maze_other'
-task = 'RR-LL' #'RR-LL', 'R-L', 'wander'
-simulation_mode = 'mix'  # 'data', 'walls', 'esn', 'mix'
+maze = 'random_walls' # 'maze', 'maze_four', 'random_walls', 'maze_other'
+task = 'wander' #'RR-LL', 'R-L', 'wander'
+simulation_mode = 'esn'  # 'data', 'walls', 'esn', 'mix'
 cues = False
 noise = False # adds noise in walls and mix mode (might not be useful)
 save_reservoir_states = False
 save_bot_states = False
-path_to_save = '/home/heloise/Mnémosyne/splitter-cells-results/traj/mix/RR-LL after setup/'
+path_to_save = '/home/heloise/Mnémosyne/splitter-cells-results/traj/data/RR-LL/'
+data_setup = None
 
 
 if __name__ == '__main__':
@@ -54,7 +55,7 @@ if __name__ == '__main__':
         else:
             model_file = "model_settings/model_RR-LL_no_cues.json"
             data_folder = "/home/heloise/Mnémosyne/splitter-cells-results/traj/esn/RR-LL/"
-            #data_folder = 'data/RR-LL/no_cues/' # marche bien
+            #data_folder = 'data/RR-LL/no_cues/'
             data_setup = 'data/RR-LL/no_cues/' # for 'mix' mode
             # data_folder = "data/RR-LL/no_cues/error_case/"
     elif task == 'wander':
@@ -82,12 +83,12 @@ if __name__ == '__main__':
 
     # Set up the experiment
     exp = Experiment(model_file, data_folder, data_setup, simulation_mode, maze, task, cues, noise, 
-                     save_reservoir_states=save_reservoir_states,
-                     save_bot_states=save_bot_states)
+                 save_reservoir_states=save_reservoir_states,
+                 save_bot_states=save_bot_states)
 
     # Set up the animation
     anim = animation.FuncAnimation(exp.simulation_visualizer.fig, exp.run,
-                                   frames=len(exp.positions), interval=1, repeat=False)
+                                   frames=10000, interval=1, repeat=False)
     plt.tight_layout()
     plt.show()
 
