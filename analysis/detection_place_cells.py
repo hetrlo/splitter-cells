@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import random as rd
 from scipy.stats import pearsonr
 from scipy.ndimage import median_filter
-from detection_other_cells import preprocessing
 from math import *
 
 # Functions to load data
@@ -32,6 +31,18 @@ def standardize(array):
         return array / max_arr
     return (array - min_arr) / (max_arr - min_arr)
 
+# Preprocessing activities to be in range 0,1
+## Will have to be changed to consider a cell and its opposite for each cell
+def preprocessing(activities):
+    processed_activites = []
+    for act in iter(activities.T):
+        if np.mean(act) < 0:
+            new_act = standardize(-1*act)
+        else :
+            new_act = standardize(act)
+        processed_activites.append(new_act)
+    return np.array(processed_activites).T
+
 # Returns an array with the amount of times the bot entered each bin
 def exploratory_map(resolution, positions):
     movement_repartition = np.zeros(resolution)
@@ -46,7 +57,7 @@ def exploratory_map(resolution, positions):
 def plot_map(explo_map):
     # Normalizing the array
     explo_map /= np.std(explo_map)
-    plt.imshow(explo_map.T, cmap='inferno', origin='lower')
+    plt.imshow(explo_map.T, cmap='YlOrRd', origin='lower')
     plt.show()
 
 # Average activity in each bin for one neuron
@@ -66,7 +77,11 @@ def activity_map(neuron_activity, positions, explo_map, resolution):
 # from matplotlib.colors import Normalize
 def plot_activity_map(neuron, positions, explo_map, resolution):
     map = activity_map(neuron, positions, explo_map, resolution)
+    plt.figure(figsize=(4, 10))
     plt.imshow(map.T, cmap = 'YlOrRd', origin='lower', vmin=0, vmax=1)
+    #plt.grid(visible=True, fillstyle='full') # Will have to work
+    #plt.pcolor(map.T, cmap= 'YlOrRd', edgecolors='gray', linewidths=1, linestyle='--', vmin=0, vmax=1)
+    #plt.gca().invert_yaxis()
     plt.show()
 
 ######################################################################################################################################
@@ -256,11 +271,12 @@ Trying to detect border cells
 
 '''
 
-path = "/home/heloise/Mnémosyne/splitter-cells-results/traj/mix/RR-LL leak rate = 0.1/"
+path = "/home/heloise/Mnémosyne/splitter-cells-results/traj/mix/empty/"
 pos = load_positions(path)
-activity = load_reservoir_states(path).T[0]
+activity = load_reservoir_states(path).T[rd.randint(0,1000)]
 resolution = (6,10)
 explomap = exploratory_map(resolution, pos)
+plot_map(explomap)
 #actmap = activity_map(activity, pos, explomap, resolution)
 plot_activity_map(activity, pos, explomap, resolution)
 

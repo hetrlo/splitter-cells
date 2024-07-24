@@ -35,7 +35,7 @@ def standardize(array):
     if min_arr == max_arr:
         return array / max_arr
     return (array - min_arr) / (max_arr - min_arr)
-    
+
 
 # Computes the percentage of time the bot touches the walls
 def walls_collision_percentage():
@@ -154,7 +154,8 @@ def position_from_activity(resolution, path, nb_train):
     act_train, pos_train_x, pos_train_y = activities[:nb_train], disc_pos_x[:nb_train], disc_pos_y[:nb_train]
     act_test, pos_test_x, pos_test_y = activities[nb_train:], disc_pos_x[nb_train:], disc_pos_y[nb_train:]
     # Standardizing activity
-    scaler = preprocessing.StandardScaler().fit(act_train)
+    scaler = preprocessing.StandardScaler()
+    scaler.fit(act_train)
     act_train = scaler.transform(act_train)
     act_test = scaler.transform(act_test)
 
@@ -212,7 +213,8 @@ def position_from_sensors(resolution, path, nb_train):
     act_train, pos_train = sensors[:nb_train], disc_pos[:nb_train]
     act_test, pos_test = sensors[nb_train:], disc_pos[nb_train:]
     # Standardizing sensors
-    scaler = preprocessing.StandardScaler().fit(act_train)
+    scaler = preprocessing.StandardScaler()
+    scaler.fit(act_train)
     act_train = scaler.transform(act_train)
     act_test = scaler.transform(act_test)
 
@@ -225,6 +227,30 @@ def position_from_sensors(resolution, path, nb_train):
     pos_predicted = classifier.predict(act_test)
     print("Classifier score :", classifier.score(act_test, pos_test))
     plot_comparison_pred_test(resolution, pos_predicted, pos_test)
+
+# Trying to decode position
+from sklearn.neural_network import MLPRegressor
+def continuous_position_from_activity(resolution, path, nb_train):
+
+    # Loading training and testing data and preprocessing
+    activities = load_reservoir_states(path)
+    positions = load_positions(path)
+    act_train, pos_train = activities[:nb_train], positions[:nb_train]
+    act_test, pos_test = activities[nb_train:], positions[nb_train:]
+
+    # Standardizing sensors
+    scaler = preprocessing.StandardScaler()
+    scaler.fit(act_train)
+    act_train = scaler.transform(act_train)
+    act_test = scaler.transform(act_test)
+    # Definition of the regressor
+    regressor = MLPRegressor(random_state=1, max_iter=500).fit(act_train, pos_train)
+
+    # Regression
+    pos_predicted = regressor.predict(act_test)
+    print("Classifier score :", regressor.score(act_test, pos_test))
+    print(pos_predicted[:10])
+    print(pos_test[:10])
 
 # Returns an array with the amount of times the bot entered each bin
 def exploratory_map(resolution, positions):
@@ -262,6 +288,8 @@ def plot_activity_map(neuron, positions, explo_map, resolution):
     plt.imshow(map.T, cmap = 'bwr', origin='lower', vmin=-1, vmax=1)
     plt.show()
 
-path = "/home/heloise/Mnémosyne/splitter-cells-results/traj/mix/RR-LL after setup/"
-position_from_sensors((6,10), path, 2000)
-position_from_activity((6,10), path, 2000)
+path = "/home/heloise/Mnémosyne/splitter-cells-results/traj/mix/RR-LL leak rate = 0.1/"
+#position_from_sensors((6,10), path, 2000)
+#position_from_activity((6,10), path, 2000)
+
+continuous_position_from_activity((6,10), path, 4000)
