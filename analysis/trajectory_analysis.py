@@ -101,11 +101,15 @@ def plot_comparison_pred_test(resolution, pos_pred, pos_test):
     x_pred, x_test = np.array(x_pred), np.array(x_test)
     plt.plot(x_pred, color='blue')
     plt.plot(x_test, color='orange', linestyle=":")
+    plt.legend(('Xpred', 'Xtest'))
+    plt.title('Position X from sensors')
     #plt.plot(np.abs(x_pred-x_test), color='black')
     plt.show()
     y_pred, y_test = np.array(y_pred), np.array(y_test)
     plt.plot(y_pred, color='blue')
     plt.plot(y_test, color='orange', linestyle=":")
+    plt.legend(('Ypred', 'Ytest'))
+    plt.title('Position Y from sensors')
     #plt.plot(np.abs(y_pred-y_test), color='black')
     plt.show()
 
@@ -129,11 +133,14 @@ def plot_pred_pos(xpred, ypred, xtest, ytest):
     x_pred, x_test = np.array(x_pred), np.array(x_test)
     plt.plot(x_pred, color='blue')
     plt.plot(x_test, color='orange', linestyle=":")
+    plt.legend(('Xpred', 'Xtest'))
+    plt.title('Position X from activity')
     #plt.plot(np.abs(x_pred-x_test), color='black')
     plt.show()
     y_pred, y_test = np.array(y_pred), np.array(y_test)
     plt.plot(y_pred, color='blue')
     plt.plot(y_test, color='orange', linestyle=":")
+    plt.title('Position Y from activity')
     #plt.plot(np.abs(y_pred-y_test), color='black')
     plt.show()
 
@@ -166,7 +173,8 @@ def position_from_activity(resolution, path, nb_train):
     pred_y = classifier_y.predict(act_test)
     print("Classifier x score:", classifier_x.score(act_test, pos_test_x))
     print("Classifier y score:", classifier_y.score(act_test, pos_test_y))
-    #plot_pred_pos(pred_x, pred_y, pos_test_x, pos_test_y)
+    plt.title('Position from activity')
+    plot_pred_pos(pred_x, pred_y, pos_test_x, pos_test_y)
 
 def posfromact(resolution, path, nb_train):
     activities = load_reservoir_states(path)
@@ -216,7 +224,7 @@ def position_from_sensors(resolution, path, nb_train):
     # Classification
     pos_predicted = classifier.predict(act_test)
     print("Classifier score :", classifier.score(act_test, pos_test))
-    #plot_comparison_pred_test(resolution, pos_predicted, pos_test)
+    plot_comparison_pred_test(resolution, pos_predicted, pos_test)
 
 # Returns an array with the amount of times the bot entered each bin
 def exploratory_map(resolution, positions):
@@ -254,6 +262,6 @@ def plot_activity_map(neuron, positions, explo_map, resolution):
     plt.imshow(map.T, cmap = 'bwr', origin='lower', vmin=-1, vmax=1)
     plt.show()
 
-path = "/home/heloise/Mnémosyne/splitter-cells/trials/random_walls/reservoir_states/"
+path = "/home/heloise/Mnémosyne/splitter-cells-results/traj/mix/RR-LL after setup/"
 position_from_sensors((6,10), path, 2000)
 position_from_activity((6,10), path, 2000)

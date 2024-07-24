@@ -556,11 +556,11 @@ if __name__ == '__main__':
     #path = "/home/heloise/Mnémosyne/splitter-cells results/traj/empty/"
     path = '/home/heloise/Mnémosyne/splitter-cells-results/traj/esn/RR-LL/'
     #plot_PCA_3D()
-    #plot_PCA_3D_general(path)
+    plot_PCA_3D_general(path)
     #plot_PCA_3D_with_distance()
     #plot_SVM_predictions()
-    gather_reservoir_states_central_corridor(cues=False)
-    plot_UMAP(cues=False, n_neighbors=5)
+    #gather_reservoir_states_central_corridor(cues=False)
+    #plot_UMAP(cues=False, n_neighbors=5)
     #plot_UMAP_general(path, n_neighbors=100)
     #plot_UMAP_border(path, n_neighbours=50)
     #plot_UMAP_error_case()

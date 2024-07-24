@@ -27,14 +27,14 @@ from experiment import Experiment
 import matplotlib.pyplot as plt
 import numpy as np
 
-maze = 'random_walls' # 'maze', 'maze_four', 'random_walls', 'maze_other'
-task = 'wander' #'RR-LL', 'R-L', 'wander'
-simulation_mode = 'esn'  # 'data', 'walls', 'esn', 'mix'
+maze = 'maze' # 'maze', 'maze_four', 'random_walls', 'maze_other'
+task = 'RR-LL' #'RR-LL', 'R-L', 'wander'
+simulation_mode = 'mix'  # 'data', 'walls', 'esn', 'mix'
 cues = False
 noise = False # adds noise in walls and mix mode (might not be useful)
-save_reservoir_states = False
-save_bot_states = False
-path_to_save = '/home/heloise/Mnémosyne/splitter-cells-results/traj/data/RR-LL/'
+save_reservoir_states = True
+save_bot_states = True
+path_to_save = '/home/heloise/Mnémosyne/splitter-cells-results/traj/verif place cells/50,100/'
 data_setup = None
 
 
@@ -54,12 +54,12 @@ if __name__ == '__main__':
             data_folder = "data/RR-LL/cues/"
         else:
             model_file = "model_settings/model_RR-LL_no_cues.json"
-            data_folder = "/home/heloise/Mnémosyne/splitter-cells-results/traj/esn/RR-LL/"
-            #data_folder = 'data/RR-LL/no_cues/'
+            #data_folder = "/home/heloise/Mnémosyne/splitter-cells-results/traj/esn/RR-LL/" # for 'mix' mode
+            data_folder = 'data/RR-LL/no_cues/'
             data_setup = 'data/RR-LL/no_cues/' # for 'mix' mode
             # data_folder = "data/RR-LL/no_cues/error_case/"
     elif task == 'wander':
-        if maze == 'random_walls' or maze == 'empty':
+        if maze == 'random_walls':
             print("Run the wander around and find out task :)")
 
             if simulation_mode == 'esn':
@@ -67,7 +67,8 @@ if __name__ == '__main__':
             elif simulation_mode == 'mix' or simulation_mode == 'walls':
                 model_file = "trials/mix/reservoir_settings.json"
 
-            data_folder = "trials/training_random_walls/second_attempt/"
+            data_folder = "/home/heloise/Mnémosyne/splitter-cells/trials/training_random_walls/second_attempt/"
+            # data_folder = "/home/heloise/Mnémosyne/splitter-cells-results/traj/data/random_walls/"
         elif maze == 'maze_other':
             print("Wandering around in the 'maze_other' maze")
 
@@ -109,6 +110,3 @@ if __name__ == '__main__':
             np.save(path_to_save + 'reservoir_states.npy', exp.model.reservoir_states)
         elif simulation_mode == 'mix':
             np.save(path_to_save + 'reservoir_states.npy', exp.pool.reservoir_states)
-
-
-

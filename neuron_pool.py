@@ -9,7 +9,6 @@ class Pool:
 
         self.model_file = model_file
         self.save_reservoir_states = save_reservoir_states
-        self.data_setup = data_setup
 
         with open(os.path.join(os.path.dirname(__file__), model_file)) as f:
             _ = json.load(f)
@@ -33,8 +32,9 @@ class Pool:
 
         self.save_reservoir_states = save_reservoir_states
         self.reservoir_states = []
-        setup = np.load(data_setup + "input.npy")
-        self.reservoir.run(setup[:nb_train+warmup]) # initialize the reservoir
+        if data_setup != None:
+            setup = np.load(data_setup + "input.npy")
+            self.reservoir.run(setup[:nb_train+warmup]) # initialize the reservoir
 
     def record_states(self):
         """ Function that records the reservoir state at the given position in the maze.

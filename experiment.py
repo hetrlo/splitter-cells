@@ -64,7 +64,7 @@ class Experiment:
                                save_reservoir_states=self.save_reservoir_states)
             self.bot.position = self.model.positions[self.model.nb_train-1]
             # To choose where the bot starts after training
-            #self.bot.position = [150,250]
+            #self.bot.position = [50,100]
 
         if self.simulation_mode == 'mix':
             self.pool = Pool(model_file=self.model_file, data_setup=self.data_setup, 
@@ -74,10 +74,9 @@ class Experiment:
         self.bot.draw(self.simulation_visualizer.ax)
 
     def run(self, frame):
-
         if self.simulation_mode == 'data' or self.simulation_mode == 'mix':
             self.bot.orientation = self.output[frame]
-            self.bot.position = self.positions[frame]
+            #self.bot.position = self.positions[frame]
             self.bot.update(self.maze, cues=self.cues)
 
             if self.simulation_mode =='mix':

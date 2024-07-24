@@ -4,6 +4,9 @@ from reservoirpy.nodes import Reservoir, Ridge, Input, RLS
 from reservoirpy.observables import nrmse, rsquare
 import os, json
 import numpy as np
+import sys
+sys.path.append('/home/heloise/Mnémosyne/splitter-cells/')
+print(sys.path)
 
 
 
@@ -64,13 +67,45 @@ class Model:
                                   input_connectivity=input_connectivity, seed=seed, noise_rc=noise_rc)
         
         readout = Ridge(1, ridge=regularization)
-        #self.reservoir << readout
+
+        # To add feedback
+        #self.reservoir <<= readout
+
         self.esn = self.reservoir >> readout
         X_train, Y_train, X_test, Y_test = split_train_test(self.input, output, self.nb_train)
 
+        #self.esn.fit(X_train, Y_train, warmup=warmup, force_teachers=True)
         self.esn.fit(X_train, Y_train, warmup=warmup)
         self.save_reservoir_states = save_reservoir_states
         self.reservoir_states = []
+
+        # Learning a position
+        readout_place = Ridge(1)
+        self.esn_place = self.reservoir >> readout_place
+
+        def euclidian_dist(p1, p2):
+            return (p1[0] - p2[0])**2 + (p1[1] - p2[1])**2
+        
+        def standardize(array):
+            array = np.abs(array)
+            max_arr = np.max(array)
+            min_arr = np.min(array)
+            if max_arr==0:
+                return array
+            if min_arr == max_arr:
+                return array / max_arr
+            return (array - min_arr) / (max_arr - min_arr)
+        
+        def dist_point(positions, point):
+            dist = np.array([euclidian_dist(pos, point) for pos in iter(positions)])
+            dist = standardize(dist)
+            return 1 - dist
+
+        point = (100,200)
+        Y_train_place = dist_point(Y_train, point)
+        Y_train_place = dist_point(Y_test, point)
+        self.esn_place.fit(X_train, Y_train_place, warmup=warmup)
+        
 
     def record_states(self):
         """ Function that records the reservoir state at the given position in the maze.
@@ -96,14 +131,3 @@ class Model:
             self.record_states()
 
         return output
-
-
-
-
-
-
-
-
-
-
-

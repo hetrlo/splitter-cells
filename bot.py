@@ -11,7 +11,7 @@ class Bot:
         # if maze == random_walls
         #self.position = 200, 25
         #self.orientation = 60
-        self.position = 150,250
+        self.position = 50,100
         self.orientation = 0
         self.index = 0
         self.pos_history = [0 for i in range(10)]
@@ -142,20 +142,20 @@ class Bot:
 
     def update_position(self, maze):
         """Updates the position of the bot according to the calculated orientation."""
-        self.position += 2 * np.array([np.cos(self.orientation), np.sin(self.orientation)])
-        # self.position += np.random.normal(0, 1) * 0.7
+        #self.position += 2 * np.array([np.cos(self.orientation), np.sin(self.orientation)])
+        #self.position += np.random.normal(0, 1) * 0.7
         self.set_wall_constraints(maze)
         # Avoiding getting stuck (bijective function)
         self.pos_history[self.index%len(self.pos_history)] = self.position[0] + 500*self.position[1]
         self.index += 1
         # Testing is the bot has been stuck for 10 steps
-        all_equal = True
+        '''all_equal = True
         for i in range(1, len(self.pos_history)):
             if self.pos_history[0] != self.pos_history[i]:
                 all_equal = False
                 break
         if all_equal:
-            self.orientation += rd.choice([-5,5])
+            self.orientation += 5'''
 
 
     def update(self, maze, cues):
