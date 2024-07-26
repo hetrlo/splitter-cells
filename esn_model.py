@@ -79,11 +79,11 @@ class Model:
         self.save_reservoir_states = save_reservoir_states
         self.reservoir_states = []
 
-        # Learning a position
-        readout_place = Ridge(1)
-        self.esn_place = self.reservoir >> readout_place
+        # Learning position
+        readout_position = Ridge()
+        self.esn_pos = self.reservoir >> readout_position
 
-        def euclidian_dist(p1, p2):
+        '''def euclidian_dist(p1, p2):
             return (p1[0] - p2[0])**2 + (p1[1] - p2[1])**2
         
         def standardize(array):
@@ -101,10 +101,9 @@ class Model:
             dist = standardize(dist)
             return 1 - dist
 
-        point = (100,200)
-        Y_train_place = dist_point(Y_train, point)
-        Y_train_place = dist_point(Y_test, point)
-        self.esn_place.fit(X_train, Y_train_place, warmup=warmup)
+        X_train_pos, Y_train_pos, X_test_pos, Y_test_pos = split_train_test(self.input, self.positions, self.nb_train)
+        self.esn_pos.fit(X_train_pos, Y_train_pos, warmup=warmup)
+        self.decoded_pos = []'''
         
 
     def record_states(self):
@@ -129,5 +128,9 @@ class Model:
         output = np.array(self.esn(input))[0][0]
         if self.save_reservoir_states:
             self.record_states()
+        
+        '''decoded_position = np.array(self.esn_pos(input))
+        if self.save_reservoir_states:
+            self.decoded_pos.append(decoded_position)'''
 
         return output

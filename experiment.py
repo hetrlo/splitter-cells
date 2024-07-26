@@ -76,7 +76,7 @@ class Experiment:
     def run(self, frame):
         if self.simulation_mode == 'data' or self.simulation_mode == 'mix':
             self.bot.orientation = self.output[frame]
-            #self.bot.position = self.positions[frame]
+            self.bot.position = self.positions[frame]
             self.bot.update(self.maze, cues=self.cues)
 
             if self.simulation_mode =='mix':

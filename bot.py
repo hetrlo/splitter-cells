@@ -8,10 +8,7 @@ class Bot:
 
     def __init__(self, noise, save_bot_sates, sensor_size):
         self.size = 10
-        # if maze == random_walls
-        #self.position = 200, 25
-        #self.orientation = 60
-        self.position = 50,100
+        self.position = 150,250
         self.orientation = 0
         self.index = 0
         self.pos_history = [0 for i in range(10)]
@@ -136,15 +133,17 @@ class Bot:
         dv = (self.sensors["value"].ravel() * [-4, -3, -2, -1, 1, 2, 3, 4]).sum()
         if abs(dv) > 0.01:  # if 75 sensor size
             self.orientation += 0.015 * dv
+            
             if self.noisy:
                 if rd.uniform(0,1) < 0.005:
                     self.orientation += rd.choice([-1, 1])
 
     def update_position(self, maze):
         """Updates the position of the bot according to the calculated orientation."""
-        #self.position += 2 * np.array([np.cos(self.orientation), np.sin(self.orientation)])
-        #self.position += np.random.normal(0, 1) * 0.7
+        self.position += 2 * np.array([np.cos(self.orientation), np.sin(self.orientation)])
+        self.position += np.random.normal(0, 1) * 0.7
         self.set_wall_constraints(maze)
+
         # Avoiding getting stuck (bijective function)
         self.pos_history[self.index%len(self.pos_history)] = self.position[0] + 500*self.position[1]
         self.index += 1

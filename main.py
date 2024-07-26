@@ -29,12 +29,12 @@ import numpy as np
 
 maze = 'maze' # 'maze', 'maze_four', 'random_walls', 'maze_other'
 task = 'RR-LL' #'RR-LL', 'R-L', 'wander'
-simulation_mode = 'mix'  # 'data', 'walls', 'esn', 'mix'
+simulation_mode = 'data'  # 'data', 'walls', 'esn', 'mix'
 cues = False
 noise = False # adds noise in walls and mix mode (might not be useful)
-save_reservoir_states = True
-save_bot_states = True
-path_to_save = '/home/heloise/Mnémosyne/splitter-cells-results/traj/verif place cells/50,100/'
+save_reservoir_states = False
+save_bot_states = False
+path_to_save = '/home/heloise/Mnémosyne/splitter-cells-results/traj/data/RR-LL/'
 data_setup = None
 
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         else:
             model_file = "model_settings/model_RR-LL_no_cues.json"
             #data_folder = "/home/heloise/Mnémosyne/splitter-cells-results/traj/esn/RR-LL/" # for 'mix' mode
-            data_folder = 'data/RR-LL/no_cues/'
+            data_folder = '/home/heloise/Mnémosyne/splitter-cells-results/traj/walls/RR-LL/'
             data_setup = 'data/RR-LL/no_cues/' # for 'mix' mode
             # data_folder = "data/RR-LL/no_cues/error_case/"
     elif task == 'wander':
@@ -76,7 +76,7 @@ if __name__ == '__main__':
                 model_file = "trials/training_maze_other/model_settings_maze_other.json"
             elif simulation_mode == 'mix' or simulation_mode == 'walls':
                 model_file = "trials/mix/reservoir_settings.json"
-            data_folder = "trials/training_maze_other/"
+            data_folder = "/home/heloise/Mnémosyne/splitter-cells-results/traj/walls/maze_other/"
     
 
     else:
@@ -89,7 +89,7 @@ if __name__ == '__main__':
 
     # Set up the animation
     anim = animation.FuncAnimation(exp.simulation_visualizer.fig, exp.run,
-                                   frames=10000, interval=1, repeat=False)
+                                   frames=25000, interval=1, repeat=False)
     plt.tight_layout()
     plt.show()
 
@@ -108,5 +108,6 @@ if __name__ == '__main__':
     if save_reservoir_states:
         if simulation_mode == 'esn':
             np.save(path_to_save + 'reservoir_states.npy', exp.model.reservoir_states)
+            np.save(path_to_save + 'decoded_position.npy', exp.model.decoded_pos)
         elif simulation_mode == 'mix':
             np.save(path_to_save + 'reservoir_states.npy', exp.pool.reservoir_states)

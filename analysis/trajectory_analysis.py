@@ -9,6 +9,7 @@ import random as rd
 from math import *
 from sklearn.neural_network import MLPClassifier
 from sklearn import preprocessing
+from scipy.ndimage import median_filter
 
 # Functions to load data
 def load_positions(path):
@@ -135,38 +136,36 @@ def plot_pred_pos(xpred, ypred, xtest, ytest):
     plt.plot(x_test, color='orange', linestyle=":")
     plt.legend(('Xpred', 'Xtest'))
     plt.title('Position X from activity')
-    #plt.plot(np.abs(x_pred-x_test), color='black')
+    plt.plot(np.abs(x_pred-x_test), color='black')
     plt.show()
     y_pred, y_test = np.array(y_pred), np.array(y_test)
     plt.plot(y_pred, color='blue')
     plt.plot(y_test, color='orange', linestyle=":")
     plt.title('Position Y from activity')
-    #plt.plot(np.abs(y_pred-y_test), color='black')
+    plt.plot(np.abs(y_pred-y_test), color='black')
     plt.show()
 
 def position_from_activity(resolution, path, nb_train):
-    activities = load_reservoir_states(path)
-    positions = load_positions(path)
+    activities = load_reservoir_states(path)[:-1200]
+    positions = load_positions(path)[:-1200]
 
     # Preprocessing positions : (0s and two 1s to indicate x and y)
     (disc_pos_x, disc_pos_y) = process_positions(resolution, positions)
     # Train and test splitting
+    scaler = preprocessing.StandardScaler()
+    scaler.fit(activities)
+    activities = scaler.transform(activities)
     act_train, pos_train_x, pos_train_y = activities[:nb_train], disc_pos_x[:nb_train], disc_pos_y[:nb_train]
     act_test, pos_test_x, pos_test_y = activities[nb_train:], disc_pos_x[nb_train:], disc_pos_y[nb_train:]
-    # Standardizing activity
-    scaler = preprocessing.StandardScaler()
-    scaler.fit(act_train)
-    act_train = scaler.transform(act_train)
-    act_test = scaler.transform(act_test)
 
     classifier_x = MLPClassifier(solver='adam', alpha=1e-5, 
-                               hidden_layer_sizes=(50,),
-                                random_state=1, max_iter=200)
+                               hidden_layer_sizes=(40,20,10),
+                                random_state=1, max_iter=500)
     classifier_x.fit(act_train, pos_train_x)
 
     classifier_y = MLPClassifier(solver='adam', alpha=1e-5, 
-                               hidden_layer_sizes=(20,20),
-                                random_state=1, max_iter=200)
+                               hidden_layer_sizes=(40,20),
+                                random_state=1, max_iter=500)
     classifier_y.fit(act_train, pos_train_y)
 
     # Classification
@@ -193,8 +192,8 @@ def posfromact(resolution, path, nb_train):
     act_test = scaler.transform(act_test)
 
     classifier = MLPClassifier(solver='adam', alpha=1e-5, 
-                               hidden_layer_sizes=(20,20),
-                                random_state=1, max_iter=200)
+                               hidden_layer_sizes=(40,40),
+                                random_state=1, max_iter=1000)
     classifier.fit(act_train, pos_train)
 
     # Classification
@@ -230,27 +229,58 @@ def position_from_sensors(resolution, path, nb_train):
 
 # Trying to decode position
 from sklearn.neural_network import MLPRegressor
-def continuous_position_from_activity(resolution, path, nb_train):
+def continuous_position_from_activity(path, nb_train):
 
     # Loading training and testing data and preprocessing
-    activities = load_reservoir_states(path)
-    positions = load_positions(path)
-    act_train, pos_train = activities[:nb_train], positions[:nb_train]
-    act_test, pos_test = activities[nb_train:], positions[nb_train:]
+    activities = load_reservoir_states(path)[:-200]
+    positions = load_positions(path)[:-200]
+    x = np.array([pos[0] for pos in iter(positions)])
+    y = np.array([pos[1] for pos in iter(positions)])
 
-    # Standardizing sensors
-    scaler = preprocessing.StandardScaler()
-    scaler.fit(act_train)
-    act_train = scaler.transform(act_train)
-    act_test = scaler.transform(act_test)
+    # Standardizing position
+    x, y = standardize(x), standardize(y)
+    act_train, x_train, y_train = activities[:nb_train], x[:nb_train], y[:nb_train] 
+    act_test, x_test, y_test = activities[nb_train:], x[nb_train:], y[nb_train:]
+
     # Definition of the regressor
-    regressor = MLPRegressor(random_state=1, max_iter=500).fit(act_train, pos_train)
+    regressor_x = MLPRegressor(random_state=1, hidden_layer_sizes=(40, 20), max_iter=1000, solver='sgd').fit(act_train, x_train)
+    regressor_y = MLPRegressor(random_state=1, hidden_layer_sizes=(40, 20), max_iter=1000, solver='sgd').fit(act_train, y_train)
 
     # Regression
-    pos_predicted = regressor.predict(act_test)
-    print("Classifier score :", regressor.score(act_test, pos_test))
-    print(pos_predicted[:10])
-    print(pos_test[:10])
+    x_predicted = regressor_x.predict(act_test)
+    y_predicted = regressor_y.predict(act_test)
+    print("Classifier score x:", regressor_x.score(act_test, x_test))
+    print("Classifier score y:", regressor_y.score(act_test, y_test))
+
+    #pos_predicted = median_filter(pos_predicted, 10)
+    print([(x_predicted[i], y_predicted[i]) for i in range(10)])
+    print([(x_test[i],y_test[i]) for i in range(10)])
+    time = np.linspace(0,len(x_test), len(x_test))
+    plt.plot(time, x_predicted, y_predicted, color='red')
+    plt.plot(time, x_test, y_test, color='blue')
+    plt.show()
+
+# Verif method
+def continuous_orientation_from_activity(path, nb_train):
+    # Loading training and testing data and preprocessing
+    activities = load_reservoir_states(path)
+    orientations = load_orientations(path)
+    # Standardizing sensors
+    orientations = standardize(orientations)
+    act_train, ori_train = activities[:nb_train], orientations[:nb_train]
+    act_test, ori_test = activities[nb_train:], orientations[nb_train:]
+
+    # Definition of the regressor
+    regressor = MLPRegressor(random_state=1, max_iter=500, hidden_layer_sizes=(20, 10)).fit(act_train, ori_train)
+
+    # Regression
+    ori_predicted = regressor.predict(act_test)
+    print("Classifier score :", regressor.score(act_test, ori_test))
+    print(ori_predicted[:10])
+    print(ori_test[:10])
+    plt.plot(ori_predicted[:-100], color='red')
+    plt.plot(ori_test[:-100], color='blue')
+    plt.show()
 
 # Returns an array with the amount of times the bot entered each bin
 def exploratory_map(resolution, positions):
@@ -288,8 +318,6 @@ def plot_activity_map(neuron, positions, explo_map, resolution):
     plt.imshow(map.T, cmap = 'bwr', origin='lower', vmin=-1, vmax=1)
     plt.show()
 
-path = "/home/heloise/Mnémosyne/splitter-cells-results/traj/mix/RR-LL leak rate = 0.1/"
-#position_from_sensors((6,10), path, 2000)
-#position_from_activity((6,10), path, 2000)
+path = "/home/heloise/Mnémosyne/splitter-cells-results/traj/esn/RR-LL/"
 
-continuous_position_from_activity((6,10), path, 4000)
+position_from_activity((15,25), path, 2000)

@@ -22,6 +22,7 @@ from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
 import seaborn as sns
 import reservoirpy.nodes as rp
+from math import pi
 plt.rc('font', size=12)
 
 
@@ -691,19 +692,15 @@ def plot_head_direction():
     plt.plot(time[1:], deviation, color='red', linewidth=5, alpha=1)
     plt.show()
 
-def plot_head_direction_cells():
+def plot_head_direction_cells(path):
     """This function visualizes the activity of head direction cells by correlating
         the reservoir states with the orientation data.
 
         Returns:
         None
         """
-    #path = "/home/heloise/Mnémosyne/splitter-cells/data/RR-LL/no_cues/reservoir_states/"
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/random_walls/second_attempt/"
-    path = "/home/heloise/Mnémosyne/splitter-cells/trials/"
     res_activity = load_reservoir_states(path)
     orientations = load_orientations(path)
-    
     res_activity = np.transpose(res_activity)
     corr_array = []
     for res in iter(res_activity):
@@ -717,9 +714,10 @@ def plot_head_direction_cells():
     ax1.set_xlabel('time (s)')
     ax1.set_ylabel('Orientation', color='orange')
     time = np.linspace(0, len(orientations), len(orientations))
-    deviation = np.diff(orientations) / np.diff(time)
-    smooth_dev = median_filter(deviation, size=200)
-    ax1.plot(orientations, color='orange', markersize=20, linewidth=7, alpha=0.5)
+    '''deviation = np.diff(orientations) / np.diff(time)
+    smooth_dev = median_filter(deviation, size=200)'''
+    mod_orientations = np.array([orientation%(2*pi) for orientation in orientations])
+    ax1.plot(mod_orientations, color='orange', markersize=20, linewidth=7, alpha=0.5)
     ax1.tick_params(axis='y', labelcolor='orange')
 
     ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
@@ -731,8 +729,9 @@ def plot_head_direction_cells():
 
     for neuron in most_correlated:
         act = res_activity[neuron] - np.mean(res_activity[neuron])
-        dev = np.diff(act) / np.diff(time)
-        smooth = median_filter(dev, size=100)
+        '''dev = np.diff(act) / np.diff(time)
+        smooth = median_filter(dev, size=100)'''
+        mod_act = np.array([a%[2*pi/np.mean(res_activity[neuron])] for a in act])
         ax2.plot(act, color=color, linewidth=0.5, alpha=1)
 
     ax2.tick_params(axis='y', labelcolor=color)
@@ -740,7 +739,6 @@ def plot_head_direction_cells():
     plt.title('Head direction cells')
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     plt.show()
-
 
 def raster_plot():
     """Generate raster plots for retrospective and prospective cells.
@@ -936,8 +934,8 @@ from random import seed, sample
 if __name__ == '__main__':
     path = "/home/heloise/Mnémosyne/splitter-cells-results/traj/esn/RR-LL/"
     #raster_plot() # Specific to the loop
-    #plot_head_direction_cells()
-    plot_hippocampal_cells(path, [0,1,2,3,4])
+    plot_head_direction_cells(path)
+    #plot_hippocampal_cells(path, [0,1,2,3,4])
     #plot_hippocampal_cells([283,504,737,943])
     #plot_hippocampal_cells_3() # Loop, corner and place cells
     #plot_splitter_cells_count()
