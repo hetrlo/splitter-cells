@@ -20,8 +20,6 @@ Before running the script, certain configurations are required:
 
 """
 
-
-
 import matplotlib.animation as animation
 from experiment import Experiment
 import matplotlib.pyplot as plt
@@ -29,7 +27,7 @@ import numpy as np
 
 maze = 'maze' # 'maze', 'maze_four', 'random_walls', 'maze_other'
 task = 'RR-LL' #'RR-LL', 'R-L', 'wander'
-simulation_mode = 'data'  # 'data', 'walls', 'esn', 'mix'
+simulation_mode = 'walls'  # 'data', 'walls', 'esn', 'mix'
 cues = False
 noise = False # adds noise in walls and mix mode (might not be useful)
 save_reservoir_states = False
@@ -55,7 +53,7 @@ if __name__ == '__main__':
         else:
             model_file = "model_settings/model_RR-LL_no_cues.json"
             #data_folder = "/home/heloise/Mnémosyne/splitter-cells-results/traj/esn/RR-LL/" # for 'mix' mode
-            data_folder = '/home/heloise/Mnémosyne/splitter-cells-results/traj/walls/RR-LL/'
+            data_folder = '/home/heloise/Mnémosyne/splitter-cells-results/traj/data/RR-LL/'
             data_setup = 'data/RR-LL/no_cues/' # for 'mix' mode
             # data_folder = "data/RR-LL/no_cues/error_case/"
     elif task == 'wander':
@@ -67,7 +65,7 @@ if __name__ == '__main__':
             elif simulation_mode == 'mix' or simulation_mode == 'walls':
                 model_file = "trials/mix/reservoir_settings.json"
 
-            data_folder = "/home/heloise/Mnémosyne/splitter-cells/trials/training_random_walls/second_attempt/"
+            data_folder = "/home/heloise/Mnémosyne/splitter-cells-results/traj/walls/random_walls/"
             # data_folder = "/home/heloise/Mnémosyne/splitter-cells-results/traj/data/random_walls/"
         elif maze == 'maze_other':
             print("Wandering around in the 'maze_other' maze")
@@ -89,7 +87,7 @@ if __name__ == '__main__':
 
     # Set up the animation
     anim = animation.FuncAnimation(exp.simulation_visualizer.fig, exp.run,
-                                   frames=25000, interval=1, repeat=False)
+                                   frames=10000, interval=1, repeat=False)
     plt.tight_layout()
     plt.show()
 

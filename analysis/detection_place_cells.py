@@ -77,11 +77,11 @@ def activity_map(neuron_activity, positions, explo_map, resolution):
 # from matplotlib.colors import Normalize
 def plot_activity_map(neuron, positions, explo_map, resolution):
     map = activity_map(neuron, positions, explo_map, resolution)
-    plt.figure(figsize=(4, 10))
-    plt.imshow(map.T, cmap = 'YlOrRd', origin='lower', vmin=0, vmax=1)
+    plt.figure(figsize=(6, 3))
+    #plt.imshow(map, cmap = 'YlOrRd', origin='lower', vmin=0, vmax=1)
     #plt.grid(visible=True, fillstyle='full') # Will have to work
-    #plt.pcolor(map.T, cmap= 'YlOrRd', edgecolors='gray', linewidths=1, linestyle='--', vmin=0, vmax=1)
-    #plt.gca().invert_yaxis()
+    plt.pcolor(map, cmap= 'YlOrRd', edgecolors='gray', linewidths=1, linestyle='--', vmin=0, vmax=1)
+    plt.gca().invert_yaxis()
     plt.show()
 
 ######################################################################################################################################
@@ -271,12 +271,12 @@ Trying to detect border cells
 
 '''
 
-path = "/home/heloise/Mnémosyne/splitter-cells-results/traj/mix/empty/"
+path = "data/RR-LL/no_cues/reservoir_states/"
 pos = load_positions(path)
 activity = load_reservoir_states(path).T[rd.randint(0,1000)]
 resolution = (6,10)
 explomap = exploratory_map(resolution, pos)
-plot_map(explomap)
+#plot_map(explomap)
 #actmap = activity_map(activity, pos, explomap, resolution)
 plot_activity_map(activity, pos, explomap, resolution)
 

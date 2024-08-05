@@ -1,6 +1,5 @@
 """
 An analysis of the bot's trajectory, to quantify its exploration of the maze
-
 """
 
 import numpy as np
@@ -11,18 +10,19 @@ from sklearn.neural_network import MLPClassifier
 from sklearn import preprocessing
 from scipy.ndimage import median_filter
 
-# Functions to load data
+# Loads a record of positions from a path
 def load_positions(path):
     return np.load(path + 'positions.npy')
 
-
+# Loads a record of reservoir states from a path
 def load_reservoir_states(path):
     return np.load(path + 'reservoir_states.npy')
 
-
+# Loads a record of orientations from a path
 def load_orientations(path):
     return np.load(path + 'output.npy')
 
+# Loads a record of sensor values from a path
 def load_sensors(path):
     return np.load(path + 'input.npy')
 
@@ -58,7 +58,7 @@ def walls_collision_percentage():
     nb_collisions = np.count_nonzero(collision)
     return (nb_collisions / len_record) * 100
 
-# Trying to fit an esn to compute position from the activity
+# Trying to fit an esn to compute position from the activity (in two steps)
 def preprocess_positions(resolution, positions):
     discrete_positions = np.array([[0 for j in range(resolution[0]+resolution[1])] for i in range(len(positions))])
     for i,pos in enumerate(positions):
@@ -80,13 +80,13 @@ def process_positions(resolution, positions):
         discrete_y[i,y] = 1
     return discrete_x, discrete_y
 
+# Plotting for prediction accuracy
 def plot_comparison_pred_test(resolution, pos_pred, pos_test):
     x_pred, y_pred, x_test, y_test = [], [], [], []
     nonsense_count = 0
     for (pred, pos) in iter(zip(pos_pred, pos_test)):
         pr, po = np.argwhere(pred).ravel(), np.argwhere(pos).ravel()
         if (len(pr) < 2):
-            #print("Panic panic, mauvaise prédiction !")
             nonsense_count += 1
             continue
         # Prediction non sense now removed
@@ -132,17 +132,18 @@ def plot_pred_pos(xpred, ypred, xtest, ytest):
         nonsense_count / len(ypred) * 100)
     # Plotting comparisons for x and y
     x_pred, x_test = np.array(x_pred), np.array(x_test)
-    plt.plot(x_pred, color='blue')
-    plt.plot(x_test, color='orange', linestyle=":")
+    #plt.plot(x_pred, color='blue')
+    #plt.plot(x_test, color='red', linestyle=":")
     plt.legend(('Xpred', 'Xtest'))
     plt.title('Position X from activity')
-    plt.plot(np.abs(x_pred-x_test), color='black')
-    plt.show()
+    #plt.plot(np.abs(x_pred-x_test), color='black')
+    #plt.show()
     y_pred, y_test = np.array(y_pred), np.array(y_test)
-    plt.plot(y_pred, color='blue')
-    plt.plot(y_test, color='orange', linestyle=":")
-    plt.title('Position Y from activity')
-    plt.plot(np.abs(y_pred-y_test), color='black')
+    plt.plot(y_test, color='red', linestyle=':', linewidth=2)
+    plt.plot(y_pred, color='blue', linewidth=2)
+    plt.title('Discretized Y coordinate decoded from activity')
+    plt.xlabel("Time")
+    plt.legend(('Ytest', 'Ypred'))
     plt.show()
 
 def position_from_activity(resolution, path, nb_train):
@@ -160,12 +161,12 @@ def position_from_activity(resolution, path, nb_train):
 
     classifier_x = MLPClassifier(solver='adam', alpha=1e-5, 
                                hidden_layer_sizes=(40,20,10),
-                                random_state=1, max_iter=500)
+                                random_state=1, max_iter=1000)
     classifier_x.fit(act_train, pos_train_x)
 
     classifier_y = MLPClassifier(solver='adam', alpha=1e-5, 
                                hidden_layer_sizes=(40,20),
-                                random_state=1, max_iter=500)
+                                random_state=1, max_iter=1000)
     classifier_y.fit(act_train, pos_train_y)
 
     # Classification
@@ -318,6 +319,5 @@ def plot_activity_map(neuron, positions, explo_map, resolution):
     plt.imshow(map.T, cmap = 'bwr', origin='lower', vmin=-1, vmax=1)
     plt.show()
 
-path = "/home/heloise/Mnémosyne/splitter-cells-results/traj/esn/RR-LL/"
-
-position_from_activity((15,25), path, 2000)
+# Example with good resolution
+# position_from_activity((6,10), path, 2000)

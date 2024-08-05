@@ -141,7 +141,7 @@ class Bot:
     def update_position(self, maze):
         """Updates the position of the bot according to the calculated orientation."""
         self.position += 2 * np.array([np.cos(self.orientation), np.sin(self.orientation)])
-        self.position += np.random.normal(0, 1) * 0.7
+        #self.position += np.random.normal(0, 1) * 0.7
         self.set_wall_constraints(maze)
 
         # Avoiding getting stuck (bijective function)
